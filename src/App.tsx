@@ -4,6 +4,7 @@ import { HomePage } from '@/pages/HomePage';
 import { ToolboxPage } from '@/pages/ToolboxPage';
 import { JsonFormatterPage } from '@/pages/tools/JsonFormatterPage';
 import { RegexTesterPage } from '@/pages/tools/RegexTesterPage';
+import { AiChatPage } from '@/pages/tools/AiChatPage';
 
 function About() {
   return <div className="p-6">关于占位</div>;
@@ -18,6 +19,7 @@ function App() {
           <Route path="/tools" element={<ToolboxPage />} />
           <Route path="/tools/json" element={<JsonFormatterPage />} />
           <Route path="/tools/regex" element={<RegexTesterPage />} />
+          <Route path="/tools/ai-chat" element={<AiChatPage />} />
           <Route path="/about" element={<About />} />
         </Routes>
       </PageLayout>
