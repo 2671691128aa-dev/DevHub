@@ -10,7 +10,7 @@ export interface TreeNode {
   value: unknown;
   children?: TreeNode[];
   path: string;
-  isCollapsed: boolean;
+  isCollapsed?: boolean;
 }
 
 export interface RegexMatch {
