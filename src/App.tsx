@@ -7,6 +7,7 @@ import { RegexTesterPage } from '@/pages/tools/RegexTesterPage';
 import { AiChatPage } from '@/pages/tools/AiChatPage';
 import { MarkdownEditorPage } from '@/pages/tools/MarkdownEditorPage';
 import { AboutPage } from '@/pages/AboutPage';
+import { CommandPalette } from '@/components/shared/CommandPalette';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/tools/markdown" element={<MarkdownEditorPage />} />
           <Route path="/about" element={<AboutPage />} />
         </Routes>
+        <CommandPalette />
       </PageLayout>
     </BrowserRouter>
   );
