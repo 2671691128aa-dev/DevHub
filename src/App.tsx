@@ -1,9 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { PageLayout } from '@/components/layout/PageLayout';
-
-function Home() {
-  return <div className="p-6">首页占位</div>;
-}
+import { HomePage } from '@/pages/HomePage';
 
 function Toolbox() {
   return <div className="p-6">工具中心占位</div>;
@@ -18,7 +15,7 @@ function App() {
     <BrowserRouter>
       <PageLayout>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/tools" element={<Toolbox />} />
           <Route path="/about" element={<About />} />
         </Routes>
