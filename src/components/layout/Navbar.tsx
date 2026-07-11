@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Github, Terminal } from 'lucide-react';
+import { Search, Github, Terminal, Menu, X } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useAppStore } from '@/store/useAppStore';
 
@@ -12,6 +13,7 @@ const navLinks = [
 export function Navbar() {
   const location = useLocation();
   const openCommandPalette = useAppStore((s) => s.openCommandPalette);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-bg-primary/80 backdrop-blur-xl">
@@ -22,8 +24,8 @@ export function Navbar() {
           <span>DevHub</span>
         </Link>
 
-        {/* Nav Links */}
-        <div className="flex items-center gap-1">
+        {/* Nav Links - desktop */}
+        <div className="hidden sm:flex items-center gap-1">
           {navLinks.map((link) => (
             <Link
               key={link.path}
@@ -56,12 +58,40 @@ export function Navbar() {
             href="https://github.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
+            className="hidden sm:flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
           >
             <Github className="h-4 w-4" />
           </a>
+          {/* Mobile menu toggle */}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="sm:hidden flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
+          >
+            {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </button>
         </div>
       </nav>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div className="sm:hidden border-t border-border bg-bg-primary px-6 py-3 space-y-1">
+          {navLinks.map((link) => (
+            <Link
+              key={link.path}
+              to={link.path}
+              onClick={() => setMobileOpen(false)}
+              className={cn(
+                'block rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                location.pathname === link.path
+                  ? 'text-text-primary bg-bg-tertiary'
+                  : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary',
+              )}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+      )}
     </header>
   );
 }

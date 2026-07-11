@@ -47,11 +47,15 @@ export function AiChatPage() {
       </div>
 
       <div className="mt-4 flex gap-4">
-        <ConversationList />
-        <div className="flex-1">
+        <div className="hidden lg:block">
+          <ConversationList />
+        </div>
+        <div className="flex-1 min-w-0">
           <ChatContainer />
         </div>
-        <PromptPanel />
+        <div className="hidden xl:block">
+          <PromptPanel />
+        </div>
       </div>
 
       <SettingsPanel />

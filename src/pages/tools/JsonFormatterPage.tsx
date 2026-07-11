@@ -53,7 +53,7 @@ export function JsonFormatterPage() {
       {/* Editor area */}
       <div className="mt-4" style={{ height: 'calc(100vh - 280px)', minHeight: 400 }}>
         {(viewMode === 'split' || viewMode === 'code') && (
-          <div className={`grid gap-4 ${viewMode === 'split' ? 'grid-cols-2' : 'grid-cols-1'}`}>
+          <div className={`grid gap-4 ${viewMode === 'split' ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'}`}>
             <div className="flex flex-col" style={{ height: 'calc(100vh - 300px)', minHeight: 380 }}>
               <label className="mb-1.5 text-xs font-medium text-text-muted">输入</label>
               <div className="flex-1">

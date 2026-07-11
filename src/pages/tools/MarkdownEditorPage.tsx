@@ -51,14 +51,14 @@ export function MarkdownEditorPage() {
       <div className="mt-4 rounded-xl border border-border bg-bg-secondary overflow-hidden" style={{ height: 'calc(100vh - 280px)', minHeight: 400 }}>
         <FormattingToolbar onInsert={insertFormatting} />
 
-        <div className="flex h-[calc(100%-41px)]">
+        <div className="flex h-[calc(100%-41px)] flex-col md:flex-row">
           {(viewMode === 'split' || viewMode === 'editor') && (
-            <div className={`flex flex-col ${viewMode === 'split' ? 'w-1/2 border-r border-border' : 'w-full'}`}>
+            <div className={`flex flex-col ${viewMode === 'split' ? 'md:w-1/2 w-full md:border-r border-border border-b md:border-b-0' : 'w-full'}`}>
               <MarkdownEditorPanel value={content} onChange={handleContentChange} textareaRef={textareaRef} />
             </div>
           )}
           {(viewMode === 'split' || viewMode === 'preview') && (
-            <div className={`flex flex-col overflow-auto ${viewMode === 'split' ? 'w-1/2' : 'w-full'}`}>
+            <div className={`flex flex-col overflow-auto ${viewMode === 'split' ? 'md:w-1/2 w-full' : 'w-full'}`}>
               <MarkdownPreview content={content} />
             </div>
           )}
