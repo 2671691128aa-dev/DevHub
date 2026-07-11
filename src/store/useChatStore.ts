@@ -3,7 +3,10 @@ import { persist } from 'zustand/middleware';
 import type { Conversation, ChatSettings, Message } from '@/types/chat';
 
 const defaultSettings: ChatSettings = {
+  provider: 'anthropic',
+  providerName: 'Anthropic',
   apiKey: '',
+  baseUrl: '',
   model: 'claude-sonnet-4-20250514',
   temperature: 0.7,
   maxTokens: 4096,
