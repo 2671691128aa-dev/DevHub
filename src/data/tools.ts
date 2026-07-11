@@ -1,0 +1,48 @@
+import type { Tool } from '@/types/tool';
+
+export const tools: Tool[] = [
+  {
+    id: 'json-formatter',
+    name: 'JSON 格式化',
+    description: '格式化、校验、转换 JSON 数据，支持树形视图',
+    category: 'developer',
+    icon: 'Braces',
+    route: '/tools/json',
+    tags: ['json', 'format', 'validate', 'tree'],
+    isHot: true,
+    status: 'stable',
+  },
+  {
+    id: 'regex-tester',
+    name: '正则测试',
+    description: '实时可视化正则匹配，支持分组捕获和常用模板',
+    category: 'developer',
+    icon: 'Regex',
+    route: '/tools/regex',
+    tags: ['regex', 'pattern', 'match', 'test'],
+    isHot: true,
+    status: 'stable',
+  },
+  {
+    id: 'ai-chat',
+    name: 'AI 聊天助手',
+    description: '智能对话助手，支持流式响应和提示词模板',
+    category: 'ai',
+    icon: 'Bot',
+    route: '/tools/ai-chat',
+    tags: ['ai', 'chat', 'claude', 'assistant'],
+    isHot: true,
+    isNew: true,
+    status: 'stable',
+  },
+  {
+    id: 'markdown-editor',
+    name: 'Markdown 编辑器',
+    description: '实时预览的 Markdown 编辑器，支持导出',
+    category: 'document',
+    icon: 'FileText',
+    route: '/tools/markdown',
+    tags: ['markdown', 'editor', 'preview', 'export'],
+    status: 'stable',
+  },
+];
