@@ -86,6 +86,13 @@ export function CommandPalette() {
                 autoFocus
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    close();
+                  }
+                }}
                 placeholder="搜索工具或命令..."
                 className="h-12 flex-1 bg-transparent text-sm text-text-primary outline-none placeholder:text-text-muted"
               />

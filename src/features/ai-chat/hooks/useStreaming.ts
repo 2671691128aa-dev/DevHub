@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 import { sendMessage } from '../services/aiService';
 import { useChatStore } from '@/store/useChatStore';
 import type { Message } from '@/types/chat';
@@ -57,6 +57,13 @@ export function useStreaming() {
     abortRef.current?.abort();
     setStreaming(false);
   }, [setStreaming]);
+
+  // Cleanup: abort streaming on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
 
   return { send, stop };
 }

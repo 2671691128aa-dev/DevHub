@@ -1,4 +1,4 @@
-import { Copy, Trash2, Braces } from 'lucide-react';
+import { Copy, Trash2, Braces, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Tabs } from '@/components/ui/Tabs';
 import { Breadcrumb } from '@/components/layout/Breadcrumb';
@@ -17,6 +17,7 @@ export function JsonFormatterPage() {
   const {
     input, setInput, output, validation, tree, stats,
     viewMode, setViewMode, handleFormat, handleMinify, handleClear, handleCopy,
+    isProcessing,
   } = useJsonFormatter();
 
   return (
@@ -32,6 +33,12 @@ export function JsonFormatterPage() {
             <Braces className="h-5 w-5" />
           </div>
           <h1 className="text-xl font-semibold">JSON 格式化</h1>
+          {isProcessing && (
+            <span className="flex items-center gap-1.5 text-xs text-text-muted">
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              处理中...
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <Button variant="secondary" size="sm" onClick={handleFormat}>格式化</Button>

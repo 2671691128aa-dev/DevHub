@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Github, Terminal, Menu, X } from 'lucide-react';
+import { Search, Github, Terminal, Menu, X, Sun, Moon } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useAppStore } from '@/store/useAppStore';
 
@@ -13,10 +13,12 @@ const navLinks = [
 export function Navbar() {
   const location = useLocation();
   const openCommandPalette = useAppStore((s) => s.openCommandPalette);
+  const theme = useAppStore((s) => s.theme);
+  const toggleTheme = useAppStore((s) => s.toggleTheme);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-bg-primary/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-border bg-bg-primary backdrop-blur-xl bg-opacity-90">
       <nav className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 font-semibold text-text-primary">
@@ -53,6 +55,13 @@ export function Navbar() {
             <kbd className="hidden sm:inline-flex h-5 items-center rounded border border-border bg-bg-tertiary px-1.5 text-[10px] font-medium text-text-muted">
               ⌘K
             </kbd>
+          </button>
+          <button
+            onClick={toggleTheme}
+            className="flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
+            title={theme === 'dark' ? '切换到亮色模式' : '切换到深色模式'}
+          >
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
           <a
             href="https://github.com"

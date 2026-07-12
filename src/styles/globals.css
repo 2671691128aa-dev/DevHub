@@ -2,7 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Light theme (default) */
 :root {
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F4F4F5;
+  --bg-tertiary: #E4E4E7;
+  --text-primary: #09090B;
+  --text-secondary: #52525B;
+  --text-muted: #A1A1AA;
+  --accent: #3B82F6;
+  --accent-hover: #2563EB;
+  --accent-glow: rgba(59, 130, 246, 0.1);
+  --success: #16A34A;
+  --warning: #CA8A04;
+  --error: #DC2626;
+  --border: #E4E4E7;
+  --border-hover: #D4D4D8;
+}
+
+/* Dark theme */
+.dark {
   --bg-primary: #09090B;
   --bg-secondary: #18181B;
   --bg-tertiary: #27272A;

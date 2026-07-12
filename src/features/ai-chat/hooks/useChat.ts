@@ -3,7 +3,9 @@ import { useChatStore } from '@/store/useChatStore';
 import { useStreaming } from './useStreaming';
 
 export function useChat() {
-  const conversation = useChatStore((s) => s.getActiveConversation());
+  const conversation = useChatStore((s) =>
+    s.conversations.find((c) => c.id === s.activeConversationId) ?? null
+  );
   const isStreaming = useChatStore((s) => s.isStreaming);
   const isSettingsOpen = useChatStore((s) => s.isSettingsOpen);
   const setSettingsOpen = useChatStore((s) => s.setSettingsOpen);
