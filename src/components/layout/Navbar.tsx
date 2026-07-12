@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Search, Github, Terminal, Menu, X, Sun, Moon } from 'lucide-react';
 import { cn } from '@/utils/cn';
@@ -16,9 +16,40 @@ export function Navbar() {
   const theme = useAppStore((s) => s.theme);
   const toggleTheme = useAppStore((s) => s.toggleTheme);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      // 下滑超过 10px 且向下滑动 → 隐藏
+      if (currentY > lastScrollY.current && currentY > 56) {
+        setHidden(true);
+      }
+      // 上滑超过 10px → 显示
+      if (lastScrollY.current - currentY > 10) {
+        setHidden(false);
+      }
+      lastScrollY.current = currentY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // 路由切换时始终显示
+  useEffect(() => {
+    setHidden(false);
+  }, [location.pathname]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border backdrop-blur-xl" style={{ backgroundColor: 'var(--bg-primary-90)' }}>
+    <header
+      className={cn(
+        'sticky top-0 z-50 border-b border-border backdrop-blur-xl transition-transform duration-300',
+        hidden && 'translate-y-[-100%]',
+      )}
+      style={{ backgroundColor: 'var(--bg-primary-90)' }}
+    >
       <nav className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 font-semibold text-text-primary">
