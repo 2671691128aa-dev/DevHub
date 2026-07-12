@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useDeferredValue } from 'react';
 import type { RegexMatch, CaptureGroup } from '@/types/common';
 
 export function useRegexTester() {
@@ -6,26 +6,30 @@ export function useRegexTester() {
   const [flags, setFlags] = useState('g');
   const [testString, setTestString] = useState('');
 
+  // Defer heavy regex computation — input stays responsive while regex runs
+  const deferredPattern = useDeferredValue(pattern);
+  const deferredTestString = useDeferredValue(testString);
+
   const { matches, isValid, error, executionTime } = useMemo(() => {
-    if (!pattern || !testString) {
+    if (!deferredPattern || !deferredTestString) {
       return { matches: [], isValid: true, error: null, executionTime: 0 };
     }
 
     const start = performance.now();
     try {
-      const regex = new RegExp(pattern, flags);
+      const regex = new RegExp(deferredPattern, flags);
       const results: RegexMatch[] = [];
       let match: RegExpExecArray | null;
 
       if (flags.includes('g')) {
         let safety = 0;
-        while ((match = regex.exec(testString)) !== null && safety < 10000) {
+        while ((match = regex.exec(deferredTestString)) !== null && safety < 10000) {
           results.push(buildMatch(match));
           if (match[0].length === 0) regex.lastIndex++;
           safety++;
         }
       } else {
-        match = regex.exec(testString);
+        match = regex.exec(deferredTestString);
         if (match) results.push(buildMatch(match));
       }
 
@@ -34,7 +38,7 @@ export function useRegexTester() {
     } catch (e) {
       return { matches: [], isValid: false, error: (e as Error).message, executionTime: 0 };
     }
-  }, [pattern, flags, testString]);
+  }, [deferredPattern, flags, deferredTestString]);
 
   const handleTemplateSelect = useCallback((templatePattern: string) => {
     setPattern(templatePattern);

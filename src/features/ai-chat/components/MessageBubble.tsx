@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { User, Bot, AlertCircle, RotateCcw, Loader2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import type { Message } from '@/types/chat';
@@ -7,7 +8,7 @@ export interface MessageBubbleProps {
   onRetry?: (content: string) => void;
 }
 
-export function MessageBubble({ message, onRetry }: MessageBubbleProps) {
+export const MessageBubble = memo(function MessageBubble({ message, onRetry }: MessageBubbleProps) {
   const isUser = message.role === 'user';
   const isFailed = message.status === 'failed';
   const isPending = message.status === 'pending';
@@ -61,4 +62,4 @@ export function MessageBubble({ message, onRetry }: MessageBubbleProps) {
       </div>
     </div>
   );
-}
+});

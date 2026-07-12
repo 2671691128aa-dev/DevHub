@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { useChatStore } from '@/store/useChatStore';
 import { useStreaming } from './useStreaming';
 
@@ -14,19 +14,30 @@ export function useChat() {
   const { send, stop } = useStreaming();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isScrollingRef = useRef(false);
 
+  // Debounced scroll: avoid layout thrashing on every streaming chunk
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (!conversation?.messages.length) return;
+    if (isScrollingRef.current) return;
+    isScrollingRef.current = true;
+
+    const timer = requestAnimationFrame(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      isScrollingRef.current = false;
+    });
+
+    return () => cancelAnimationFrame(timer);
   }, [conversation?.messages]);
 
-  const handleSend = (content: string) => {
+  const handleSend = useCallback((content: string) => {
     if (!content.trim()) return;
-    if (!settings.apiKey) {
+    if (!useChatStore.getState().settings.apiKey) {
       setSettingsOpen(true);
       return;
     }
     send(content);
-  };
+  }, [send, setSettingsOpen]);
 
   return {
     conversation,

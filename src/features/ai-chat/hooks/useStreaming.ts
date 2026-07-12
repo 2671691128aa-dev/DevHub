@@ -1,19 +1,27 @@
 import { useRef, useCallback, useEffect } from 'react';
 import { sendMessage } from '../services/aiService';
 import { useChatStore } from '@/store/useChatStore';
-import type { Message } from '@/types/chat';
+import type { Message, ChatSettings } from '@/types/chat';
 
 export function useStreaming() {
   const abortRef = useRef<AbortController | null>(null);
-  const {
-    addMessage, updateMessageStatus, updateLastAssistantMessage,
-    removeLastAssistantMessage, setStreaming, settings,
-    getActiveConversation, createConversation,
-  } = useChatStore();
+
+  // Select individual actions (Zustand guarantees stable references for actions)
+  const addMessage = useChatStore((s) => s.addMessage);
+  const updateMessageStatus = useChatStore((s) => s.updateMessageStatus);
+  const updateLastAssistantMessage = useChatStore((s) => s.updateLastAssistantMessage);
+  const removeLastAssistantMessage = useChatStore((s) => s.removeLastAssistantMessage);
+  const setStreaming = useChatStore((s) => s.setStreaming);
+  const createConversation = useChatStore((s) => s.createConversation);
 
   const send = useCallback(
     async (content: string) => {
-      const conversationId = getActiveConversation()?.id ?? createConversation();
+      // Use getState() to read latest values inside callback without subscribing
+      const state = useChatStore.getState();
+      const settings: ChatSettings = state.settings;
+      const conversationId = state.activeConversationId
+        ?? state.conversations[0]?.id
+        ?? createConversation();
 
       // 1. 乐观更新：先把用户消息显示在 UI 上，标记为 pending
       const userMessage: Message = {
@@ -59,7 +67,7 @@ export function useStreaming() {
         abortRef.current = null;
       }
     },
-    [addMessage, updateMessageStatus, updateLastAssistantMessage, removeLastAssistantMessage, setStreaming, settings, getActiveConversation, createConversation],
+    [addMessage, updateMessageStatus, updateLastAssistantMessage, removeLastAssistantMessage, setStreaming, createConversation],
   );
 
   const stop = useCallback(() => {
