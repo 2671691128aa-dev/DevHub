@@ -2,17 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
 import { get, set, del } from 'idb-keyval';
 import type { Conversation, ChatSettings, Message } from '@/types/chat';
-
-const defaultSettings: ChatSettings = {
-  provider: 'anthropic',
-  providerName: 'Anthropic',
-  apiKey: '',
-  baseUrl: '',
-  model: 'claude-sonnet-4-20250514',
-  temperature: 0.7,
-  maxTokens: 4096,
-  systemPrompt: '你是一个专业的开发者助手，擅长编程、调试和技术问题解答。',
-};
+import { STORAGE_KEYS, DEFAULT_CHAT_SETTINGS, DEFAULT_CONVERSATION_TITLE } from '@/constants';
 
 // IndexedDB-backed storage for Zustand persist
 // Why IndexedDB? localStorage has ~5MB limit, chat history with AI responses
@@ -57,7 +47,7 @@ export const useChatStore = create<ChatStore>()(
       conversations: [],
       activeConversationId: null,
       isStreaming: false,
-      settings: defaultSettings,
+      settings: DEFAULT_CHAT_SETTINGS,
       isSettingsOpen: false,
       isHydrated: false,
 
@@ -65,11 +55,11 @@ export const useChatStore = create<ChatStore>()(
         const id = crypto.randomUUID();
         const conversation: Conversation = {
           id,
-          title: '新对话',
+          title: DEFAULT_CONVERSATION_TITLE,
           messages: [],
           createdAt: Date.now(),
           updatedAt: Date.now(),
-          model: get().settings.model,
+          model: DEFAULT_CHAT_SETTINGS.model,
         };
         set((state) => ({
           conversations: [conversation, ...state.conversations],
@@ -157,7 +147,7 @@ export const useChatStore = create<ChatStore>()(
       },
     }),
     {
-      name: 'devhub-chat',
+      name: STORAGE_KEYS.CHAT,
       storage: createJSONStorage(() => indexedDBStorage),
       partialize: (state) => ({
         conversations: state.conversations,

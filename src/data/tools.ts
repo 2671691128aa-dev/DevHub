@@ -1,4 +1,5 @@
 import type { Tool } from '@/types/tool';
+import { ROUTES } from '@/constants/routes';
 
 export const tools: Tool[] = [
   {
@@ -7,7 +8,7 @@ export const tools: Tool[] = [
     description: '格式化、校验、转换 JSON 数据，支持树形视图',
     category: 'developer',
     icon: 'Braces',
-    route: '/tools/json',
+    route: ROUTES.TOOLS_JSON,
     tags: ['json', 'format', 'validate', 'tree'],
     isHot: true,
     status: 'stable',
@@ -18,7 +19,7 @@ export const tools: Tool[] = [
     description: '实时可视化正则匹配，支持分组捕获和常用模板',
     category: 'developer',
     icon: 'Regex',
-    route: '/tools/regex',
+    route: ROUTES.TOOLS_REGEX,
     tags: ['regex', 'pattern', 'match', 'test'],
     isHot: true,
     status: 'stable',
@@ -29,7 +30,7 @@ export const tools: Tool[] = [
     description: '智能对话助手，支持流式响应和提示词模板',
     category: 'ai',
     icon: 'Bot',
-    route: '/tools/ai-chat',
+    route: ROUTES.TOOLS_AI_CHAT,
     tags: ['ai', 'chat', 'claude', 'assistant'],
     isHot: true,
     isNew: true,
@@ -41,7 +42,7 @@ export const tools: Tool[] = [
     description: '实时预览的 Markdown 编辑器，支持导出',
     category: 'document',
     icon: 'FileText',
-    route: '/tools/markdown',
+    route: ROUTES.TOOLS_MARKDOWN,
     tags: ['markdown', 'editor', 'preview', 'export'],
     status: 'stable',
   },

@@ -7,6 +7,8 @@ import { PromptPanel } from '@/features/ai-chat/components/PromptPanel';
 import { ConversationList } from '@/features/ai-chat/components/ConversationList';
 import { SettingsPanel } from '@/features/ai-chat/components/SettingsPanel';
 import { useChatStore } from '@/store/useChatStore';
+import { ROUTES } from '@/constants/routes';
+import { PROMPT_INSERT_EVENT } from '@/constants/defaults';
 
 export function AiChatPage() {
   const setSettingsOpen = useChatStore((s) => s.setSettingsOpen);
@@ -22,14 +24,14 @@ export function AiChatPage() {
         textarea.focus();
       }
     };
-    window.addEventListener('devhub:insert-prompt', handler);
-    return () => window.removeEventListener('devhub:insert-prompt', handler);
+    window.addEventListener(PROMPT_INSERT_EVENT, handler);
+    return () => window.removeEventListener(PROMPT_INSERT_EVENT, handler);
   }, []);
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-6">
       <Breadcrumb items={[
-        { label: '工具', path: '/tools' },
+        { label: '工具', path: ROUTES.TOOLS },
         { label: 'AI 聊天助手' },
       ]} />
 

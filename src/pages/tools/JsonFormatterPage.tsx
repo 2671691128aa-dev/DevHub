@@ -6,6 +6,7 @@ import { JsonEditor } from '@/features/json/components/JsonEditor';
 import { JsonTreeView } from '@/features/json/components/JsonTreeView';
 import { ValidationStatus } from '@/features/json/components/ValidationStatus';
 import { useJsonFormatter } from '@/features/json/hooks/useJsonFormatter';
+import { ROUTES } from '@/constants/routes';
 
 const viewTabs = [
   { id: 'code', label: '代码' },
@@ -23,7 +24,7 @@ export function JsonFormatterPage() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-6">
       <Breadcrumb items={[
-        { label: '工具', path: '/tools' },
+        { label: '工具', path: ROUTES.TOOLS },
         { label: 'JSON 格式化' },
       ]} />
 

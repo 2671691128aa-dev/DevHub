@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Github, Mail, ExternalLink } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
+import { EXTERNAL_LINKS } from '@/constants/api';
 
 const techStack = [
   { name: 'React 18', category: '框架', color: 'blue' as const, desc: 'UI 框架' },
@@ -113,10 +114,10 @@ export function AboutPage() {
                 前端开发者，热爱构建高质量的用户界面和开发工具。
               </p>
               <div className="mt-3 flex gap-3">
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary transition-colors">
+                <a href={EXTERNAL_LINKS.GITHUB} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary transition-colors">
                   <Github className="h-4 w-4" /> GitHub
                 </a>
-                <a href="mailto:dev@example.com" className="flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary transition-colors">
+                <a href={EXTERNAL_LINKS.DEV_EMAIL} className="flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary transition-colors">
                   <Mail className="h-4 w-4" /> Email
                 </a>
                 <a href="#" className="flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary transition-colors">

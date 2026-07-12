@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { STORAGE_KEYS, DEFAULT_THEME } from '@/constants';
 
 type Theme = 'light' | 'dark';
 
@@ -23,14 +24,14 @@ function applyTheme(theme: Theme) {
 }
 
 // Apply saved theme on module load (before React hydrates)
-const savedTheme = localStorage.getItem('devhub-theme') as Theme | null;
-applyTheme(savedTheme ?? 'dark');
+const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME) as Theme | null;
+applyTheme(savedTheme ?? DEFAULT_THEME);
 
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
       isCommandPaletteOpen: false,
-      theme: savedTheme ?? 'dark',
+      theme: savedTheme ?? DEFAULT_THEME,
       openCommandPalette: () => set({ isCommandPaletteOpen: true }),
       closeCommandPalette: () => set({ isCommandPaletteOpen: false }),
       toggleCommandPalette: () =>
@@ -47,7 +48,7 @@ export const useAppStore = create<AppState>()(
         }),
     }),
     {
-      name: 'devhub-theme',
+      name: STORAGE_KEYS.THEME,
       partialize: (state) => ({ theme: state.theme }),
     },
   ),

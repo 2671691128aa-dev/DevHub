@@ -1,6 +1,7 @@
 import { cn } from '@/utils/cn';
 import { useChatStore } from '@/store/useChatStore';
 import { PROMPT_TEMPLATES } from '@/constants/prompt-templates';
+import { PROMPT_INSERT_EVENT } from '@/constants/defaults';
 import type { PromptTemplate } from '@/types/chat';
 
 const categoryLabels: Record<string, string> = {
@@ -13,7 +14,7 @@ export function PromptPanel() {
   const isStreaming = useChatStore((s) => s.isStreaming);
 
   const handleSelect = (template: PromptTemplate) => {
-    window.dispatchEvent(new CustomEvent('devhub:insert-prompt', { detail: template.prompt }));
+    window.dispatchEvent(new CustomEvent(PROMPT_INSERT_EVENT, { detail: template.prompt }));
   };
 
   return (

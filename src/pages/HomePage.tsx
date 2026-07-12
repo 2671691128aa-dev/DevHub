@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { ToolCard } from '@/components/shared/ToolCard';
 import { tools, categories } from '@/data';
+import { ROUTES, EXTERNAL_LINKS } from '@/constants';
 import {
   Braces,
   Regex,
@@ -61,13 +62,13 @@ export function HomePage() {
             快速、免费、本地运行。
           </p>
           <div className="mt-8 flex items-center justify-center gap-3">
-            <Link to="/tools">
+            <Link to={ROUTES.TOOLS}>
               <Button size="lg">
                 开始使用
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
-            <Link to="/about">
+            <Link to={ROUTES.ABOUT}>
               <Button variant="secondary" size="lg">
                 了解更多
               </Button>
@@ -90,7 +91,7 @@ export function HomePage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: i * 0.08 }}
               >
-                <Link to={`/tools?category=${cat.id}`}>
+                <Link to={`${ROUTES.TOOLS}?category=${cat.id}`}>
                   <Card hoverable className="gap-3">
                     <div
                       className="flex h-10 w-10 items-center justify-center rounded-lg"
@@ -147,7 +148,7 @@ export function HomePage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between text-sm text-text-muted">
           <span>© 2026 DevHub. All rights reserved.</span>
           <div className="flex items-center gap-4">
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-text-secondary">
+            <a href={EXTERNAL_LINKS.GITHUB} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-text-secondary">
               GitHub
             </a>
             <span>React + Vite + Tailwind</span>

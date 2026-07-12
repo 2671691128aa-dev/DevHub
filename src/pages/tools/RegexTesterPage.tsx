@@ -5,6 +5,7 @@ import { MatchHighlight } from '@/features/regex/components/MatchHighlight';
 import { MatchList } from '@/features/regex/components/MatchList';
 import { RegexTemplates } from '@/features/regex/components/RegexTemplates';
 import { useRegexTester } from '@/features/regex/hooks/useRegexTester';
+import { ROUTES } from '@/constants/routes';
 
 export function RegexTesterPage() {
   const {
@@ -17,7 +18,7 @@ export function RegexTesterPage() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-6">
       <Breadcrumb items={[
-        { label: '工具', path: '/tools' },
+        { label: '工具', path: ROUTES.TOOLS },
         { label: '正则测试' },
       ]} />
 

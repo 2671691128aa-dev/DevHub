@@ -2,19 +2,16 @@ import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { get, set } from 'idb-keyval';
 import type { MarkdownViewMode } from '@/types/chat';
 import { getWordCount, getReadingTime, getLineCount, exportAsHtml } from '../utils/parser';
-
-const DEFAULT_CONTENT = '# 欢迎使用 Markdown 编辑器\n\n开始编写你的文档...\n\n## 功能\n\n- 实时预览\n- 工具栏快捷操作\n- 导出 HTML\n- 自动保存到 IndexedDB（无容量限制）\n';
-
-const STORAGE_KEY = 'devhub-markdown-content';
+import { STORAGE_KEYS, DEFAULT_MARKDOWN_CONTENT, DEFAULT_MARKDOWN_VIEW_MODE, MARKDOWN_EXPORT_FILENAME } from '@/constants';
 
 export function useMarkdownEditor() {
-  const [content, setContent] = useState(DEFAULT_CONTENT);
-  const [viewMode, setViewMode] = useState<MarkdownViewMode>('split');
+  const [content, setContent] = useState(DEFAULT_MARKDOWN_CONTENT);
+  const [viewMode, setViewMode] = useState<MarkdownViewMode>(DEFAULT_MARKDOWN_VIEW_MODE);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Load saved content from IndexedDB on mount
   useEffect(() => {
-    get<string>(STORAGE_KEY).then((saved) => {
+    get<string>(STORAGE_KEYS.MARKDOWN_CONTENT).then((saved) => {
       if (saved) setContent(saved);
     });
   }, []);
@@ -25,7 +22,7 @@ export function useMarkdownEditor() {
     setContent(value);
     clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
-      set(STORAGE_KEY, value);
+      set(STORAGE_KEYS.MARKDOWN_CONTENT, value);
     }, 500);
   }, []);
 
@@ -70,7 +67,7 @@ export function useMarkdownEditor() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'document.html';
+    a.download = MARKDOWN_EXPORT_FILENAME;
     a.click();
     URL.revokeObjectURL(url);
   }, [content]);

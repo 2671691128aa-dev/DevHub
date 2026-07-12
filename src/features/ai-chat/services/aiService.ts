@@ -1,4 +1,5 @@
 import type { Message, ChatSettings, AnthropicStreamEvent, OpenAIStreamEvent } from '@/types/chat';
+import { ANTHROPIC_API_URL, ANTHROPIC_API_VERSION, OPENAI_CHAT_PATH, DEFAULT_OPENAI_BASE_URL } from '@/constants/api';
 
 export async function sendMessage(
   messages: Message[],
@@ -20,12 +21,12 @@ async function sendAnthropic(
   onChunk: (text: string) => void,
   signal: AbortSignal,
 ): Promise<void> {
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
+  const response = await fetch(ANTHROPIC_API_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'x-api-key': settings.apiKey,
-      'anthropic-version': '2023-06-01',
+      'anthropic-version': ANTHROPIC_API_VERSION,
       'anthropic-dangerous-direct-browser-access': 'true',
     },
     signal,
@@ -85,8 +86,8 @@ async function sendOpenAICompatible(
   onChunk: (text: string) => void,
   signal: AbortSignal,
 ): Promise<void> {
-  const baseUrl = settings.baseUrl || 'https://api.deepseek.com';
-  const url = `${baseUrl.replace(/\/+$/, '')}/v1/chat/completions`;
+  const baseUrl = settings.baseUrl || DEFAULT_OPENAI_BASE_URL;
+  const url = `${baseUrl.replace(/\/+$/, '')}${OPENAI_CHAT_PATH}`;
 
   const allMessages = [
     ...(settings.systemPrompt ? [{ role: 'system' as const, content: settings.systemPrompt }] : []),

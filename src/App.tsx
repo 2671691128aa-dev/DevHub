@@ -8,19 +8,20 @@ import { AiChatPage } from '@/pages/tools/AiChatPage';
 import { MarkdownEditorPage } from '@/pages/tools/MarkdownEditorPage';
 import { AboutPage } from '@/pages/AboutPage';
 import { CommandPalette } from '@/components/shared/CommandPalette';
+import { ROUTES } from '@/constants/routes';
 
 function App() {
   return (
     <BrowserRouter>
       <PageLayout>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/tools" element={<ToolboxPage />} />
-          <Route path="/tools/json" element={<JsonFormatterPage />} />
-          <Route path="/tools/regex" element={<RegexTesterPage />} />
-          <Route path="/tools/ai-chat" element={<AiChatPage />} />
-          <Route path="/tools/markdown" element={<MarkdownEditorPage />} />
-          <Route path="/about" element={<AboutPage />} />
+          <Route path={ROUTES.HOME} element={<HomePage />} />
+          <Route path={ROUTES.TOOLS} element={<ToolboxPage />} />
+          <Route path={ROUTES.TOOLS_JSON} element={<JsonFormatterPage />} />
+          <Route path={ROUTES.TOOLS_REGEX} element={<RegexTesterPage />} />
+          <Route path={ROUTES.TOOLS_AI_CHAT} element={<AiChatPage />} />
+          <Route path={ROUTES.TOOLS_MARKDOWN} element={<MarkdownEditorPage />} />
+          <Route path={ROUTES.ABOUT} element={<AboutPage />} />
         </Routes>
         <CommandPalette />
       </PageLayout>

@@ -6,6 +6,7 @@ import { FormattingToolbar } from '@/features/markdown/components/FormattingTool
 import { MarkdownEditorPanel } from '@/features/markdown/components/MarkdownEditor';
 import { MarkdownPreview } from '@/features/markdown/components/MarkdownPreview';
 import { useMarkdownEditor } from '@/features/markdown/hooks/useMarkdownEditor';
+import { ROUTES } from '@/constants/routes';
 
 const viewTabs = [
   { id: 'split', label: '分栏' },
@@ -22,7 +23,7 @@ export function MarkdownEditorPage() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-6">
       <Breadcrumb items={[
-        { label: '工具', path: '/tools' },
+        { label: '工具', path: ROUTES.TOOLS },
         { label: 'Markdown 编辑器' },
       ]} />
 

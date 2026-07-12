@@ -3,11 +3,12 @@ import { Link, useLocation } from 'react-router-dom';
 import { Search, Github, Terminal, Menu, X, Sun, Moon } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useAppStore } from '@/store/useAppStore';
+import { ROUTES, EXTERNAL_LINKS } from '@/constants';
 
 const navLinks = [
-  { label: '首页', path: '/' },
-  { label: '工具', path: '/tools' },
-  { label: '关于', path: '/about' },
+  { label: '首页', path: ROUTES.HOME },
+  { label: '工具', path: ROUTES.TOOLS },
+  { label: '关于', path: ROUTES.ABOUT },
 ];
 
 export function Navbar() {
@@ -95,7 +96,7 @@ export function Navbar() {
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
           <a
-            href="https://github.com"
+            href={EXTERNAL_LINKS.GITHUB}
             target="_blank"
             rel="noopener noreferrer"
             className="hidden sm:flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
