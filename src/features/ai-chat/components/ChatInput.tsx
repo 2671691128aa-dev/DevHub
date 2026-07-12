@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Send, Square } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
-interface ChatInputProps {
+export interface ChatInputProps {
   onSend: (content: string) => void;
   onStop: () => void;
   isStreaming: boolean;

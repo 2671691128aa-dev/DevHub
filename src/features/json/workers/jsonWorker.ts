@@ -1,36 +1,11 @@
 // JSON formatting worker — runs JSON.parse/stringify off the main thread
 // to prevent UI blocking on large files (10MB+)
 
+import type { JsonWorkerRequest, JsonWorkerResponse, TreeNode } from '@/types/common';
 import { formatJson, minifyJson, buildTree, countKeys, getDepth, formatSize } from '../utils/formatter';
 import { validateJson } from '../utils/validator';
 
-export interface WorkerRequest {
-  id: number;
-  type: 'format' | 'minify' | 'validate';
-  input: string;
-  indent?: number;
-}
-
-export interface WorkerResponse {
-  id: number;
-  type: 'format' | 'minify' | 'validate';
-  success: boolean;
-  data?: {
-    output: string;
-    tree: ReturnType<typeof buildTree> | null;
-    isValid: boolean;
-    error: { message: string; line: number; column: number } | null;
-    stats: {
-      lines: number;
-      size: string;
-      depth: number;
-      keys: number;
-    };
-  };
-  error?: string;
-}
-
-self.onmessage = (e: MessageEvent<WorkerRequest>) => {
+self.onmessage = (e: MessageEvent<JsonWorkerRequest>) => {
   const { id, type, input, indent = 2 } = e.data;
 
   try {
@@ -48,12 +23,12 @@ self.onmessage = (e: MessageEvent<WorkerRequest>) => {
           error: validation.error,
           stats: { lines: input.split('\n').length, size: formatSize(new Blob([input]).size), depth: 0, keys: 0 },
         },
-      } satisfies WorkerResponse);
+      } satisfies JsonWorkerResponse);
       return;
     }
 
     let output = '';
-    let tree = null;
+    let tree: TreeNode | null = null;
 
     if (type === 'format') {
       output = formatJson(input, indent);
@@ -83,7 +58,7 @@ self.onmessage = (e: MessageEvent<WorkerRequest>) => {
             keys: countKeys(parsed),
           },
         },
-      } satisfies WorkerResponse);
+      } satisfies JsonWorkerResponse);
     } catch {
       self.postMessage({
         id,
@@ -96,7 +71,7 @@ self.onmessage = (e: MessageEvent<WorkerRequest>) => {
           error: null,
           stats: { lines: output.split('\n').length, size: formatSize(new Blob([input]).size), depth: 0, keys: 0 },
         },
-      } satisfies WorkerResponse);
+      } satisfies JsonWorkerResponse);
     }
   } catch (err) {
     self.postMessage({
@@ -104,6 +79,6 @@ self.onmessage = (e: MessageEvent<WorkerRequest>) => {
       type,
       success: false,
       error: (err as Error).message,
-    } satisfies WorkerResponse);
+    } satisfies JsonWorkerResponse);
   }
 };

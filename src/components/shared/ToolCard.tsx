@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import type { Tool } from '@/types/tool';
 
-interface ToolCardProps {
+export interface ToolCardProps {
   tool: Tool;
   icon: LucideIcon;
 }

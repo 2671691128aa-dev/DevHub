@@ -1,7 +1,7 @@
 import { useMemo, type ReactNode } from 'react';
 import type { RegexMatch } from '@/types/common';
 
-interface MatchHighlightProps {
+export interface MatchHighlightProps {
   text: string;
   matches: RegexMatch[];
 }

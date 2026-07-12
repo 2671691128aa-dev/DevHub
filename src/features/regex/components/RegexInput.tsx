@@ -1,7 +1,7 @@
 import { Input } from '@/components/ui/Input';
 import { cn } from '@/utils/cn';
 
-interface RegexInputProps {
+export interface RegexInputProps {
   pattern: string;
   onPatternChange: (value: string) => void;
   flags: string;

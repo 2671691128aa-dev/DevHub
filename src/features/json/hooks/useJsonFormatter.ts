@@ -1,32 +1,26 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import type { TreeNode, JsonStats, JsonWorkerResponse, JsonViewMode } from '@/types/common';
 import { validateJson } from '../utils/validator';
 import { formatJson, minifyJson, buildTree, countKeys, getDepth, formatSize } from '../utils/formatter';
-
-type ViewMode = 'code' | 'tree' | 'split';
-
-interface JsonStats {
-  lines: number;
-  size: string;
-  depth: number;
-  keys: number;
-}
 
 // Threshold: use worker for input larger than 100KB
 const WORKER_THRESHOLD = 100 * 1024;
 
+interface WorkerResult {
+  output: string;
+  tree: TreeNode | null;
+  validation: { valid: true } | { valid: false; error: { message: string; line: number; column: number } };
+  stats: JsonStats;
+}
+
 export function useJsonFormatter() {
   const [input, setInput] = useState('');
-  const [viewMode, setViewMode] = useState<ViewMode>('split');
+  const [viewMode, setViewMode] = useState<JsonViewMode>('split');
   const [indent, setIndent] = useState(2);
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Worker result state (for large files)
-  const [workerResult, setWorkerResult] = useState<{
-    output: string;
-    tree: ReturnType<typeof buildTree> | null;
-    validation: { valid: true } | { valid: false; error: { message: string; line: number; column: number } };
-    stats: JsonStats;
-  } | null>(null);
+  const [workerResult, setWorkerResult] = useState<WorkerResult | null>(null);
 
   const workerRef = useRef<Worker | null>(null);
   const requestIdRef = useRef(0);
@@ -64,25 +58,25 @@ export function useJsonFormatter() {
     const id = ++requestIdRef.current;
     setIsProcessing(true);
 
-    const handler = (e: MessageEvent) => {
+    const handler = (e: MessageEvent<JsonWorkerResponse>) => {
       if (e.data.id !== id) return;
       worker.removeEventListener('message', handler);
       setIsProcessing(false);
 
-      if (e.data.success) {
+      if (e.data.success && e.data.data) {
         setWorkerResult({
           output: e.data.data.output,
           tree: e.data.data.tree,
           validation: e.data.data.isValid
             ? { valid: true }
-            : { valid: false, error: e.data.data.error },
+            : { valid: false, error: e.data.data.error ?? { message: 'Unknown error', line: 0, column: 0 } },
           stats: e.data.data.stats,
         });
       } else {
         setWorkerResult({
           output: '',
           tree: null,
-          validation: { valid: false, error: { message: e.data.error, line: 0, column: 0 } },
+          validation: { valid: false, error: { message: e.data.error ?? 'Unknown error', line: 0, column: 0 } },
           stats: { lines: 0, size: '0 B', depth: 0, keys: 0 },
         });
       }

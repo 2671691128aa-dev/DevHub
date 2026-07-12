@@ -13,6 +13,18 @@ export interface TreeNode {
   isCollapsed?: boolean;
 }
 
+export interface JsonStats {
+  lines: number;
+  size: string;
+  depth: number;
+  keys: number;
+}
+
+export interface JsonValidationResult {
+  valid: boolean;
+  error: JsonError | null;
+}
+
 export interface RegexMatch {
   index: number;
   fullMatch: string;
@@ -33,3 +45,30 @@ export interface RegexTemplate {
   description: string;
   example: string;
 }
+
+// --- Worker types ---
+
+export interface JsonWorkerRequest {
+  id: number;
+  type: 'format' | 'minify' | 'validate';
+  input: string;
+  indent?: number;
+}
+
+export interface JsonWorkerResponse {
+  id: number;
+  type: 'format' | 'minify' | 'validate';
+  success: boolean;
+  data?: {
+    output: string;
+    tree: TreeNode | null;
+    isValid: boolean;
+    error: JsonError | null;
+    stats: JsonStats;
+  };
+  error?: string;
+}
+
+// --- JSON Formatter view ---
+
+export type JsonViewMode = 'code' | 'tree' | 'split';

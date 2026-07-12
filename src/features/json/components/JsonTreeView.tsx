@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import type { TreeNode } from '@/types/common';
 
-interface JsonTreeViewProps {
+export interface JsonTreeViewProps {
   tree: TreeNode;
 }
 

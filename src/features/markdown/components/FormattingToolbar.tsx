@@ -3,7 +3,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
-interface FormattingToolbarProps {
+export interface FormattingToolbarProps {
   onInsert: (prefix: string, suffix?: string) => void;
 }
 

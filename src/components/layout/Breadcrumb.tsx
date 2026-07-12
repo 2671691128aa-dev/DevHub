@@ -6,7 +6,7 @@ interface BreadcrumbItem {
   path?: string;
 }
 
-interface BreadcrumbProps {
+export interface BreadcrumbProps {
   items: BreadcrumbItem[];
 }
 

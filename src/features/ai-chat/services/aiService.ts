@@ -1,4 +1,4 @@
-import type { Message, ChatSettings } from '@/types/chat';
+import type { Message, ChatSettings, AnthropicStreamEvent, OpenAIStreamEvent } from '@/types/chat';
 
 export async function sendMessage(
   messages: Message[],
@@ -66,7 +66,7 @@ async function sendAnthropic(
       if (data === '[DONE]') return;
 
       try {
-        const parsed = JSON.parse(data);
+        const parsed: AnthropicStreamEvent = JSON.parse(data) as AnthropicStreamEvent;
         if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
           onChunk(parsed.delta.text);
         }
@@ -136,7 +136,7 @@ async function sendOpenAICompatible(
       if (data === '[DONE]') return;
 
       try {
-        const parsed = JSON.parse(data);
+        const parsed: OpenAIStreamEvent = JSON.parse(data) as OpenAIStreamEvent;
         const content = parsed.choices?.[0]?.delta?.content;
         if (content) {
           onChunk(content);

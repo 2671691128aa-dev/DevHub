@@ -1,10 +1,10 @@
 import { CheckCircle, XCircle } from 'lucide-react';
-import type { JsonError } from '@/types/common';
+import type { JsonError, JsonStats } from '@/types/common';
 
-interface ValidationStatusProps {
+export interface ValidationStatusProps {
   isValid: boolean;
   error: JsonError | null;
-  stats: { lines: number; size: string; depth: number; keys: number };
+  stats: JsonStats;
 }
 
 export function ValidationStatus({ isValid, error, stats }: ValidationStatusProps) {

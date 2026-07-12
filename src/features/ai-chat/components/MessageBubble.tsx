@@ -2,7 +2,7 @@ import { User, Bot, AlertCircle, RotateCcw, Loader2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import type { Message } from '@/types/chat';
 
-interface MessageBubbleProps {
+export interface MessageBubbleProps {
   message: Message;
   onRetry?: (content: string) => void;
 }

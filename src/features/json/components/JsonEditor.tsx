@@ -1,6 +1,6 @@
 import { cn } from '@/utils/cn';
 
-interface JsonEditorProps {
+export interface JsonEditorProps {
   value: string;
   onChange: (value: string) => void;
   readOnly?: boolean;

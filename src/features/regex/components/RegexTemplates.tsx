@@ -1,7 +1,7 @@
 import { cn } from '@/utils/cn';
 import { REGEX_TEMPLATES } from '@/constants/regex-templates';
 
-interface RegexTemplatesProps {
+export interface RegexTemplatesProps {
   onSelect: (pattern: string) => void;
   selectedId?: string;
 }

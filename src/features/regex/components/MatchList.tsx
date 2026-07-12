@@ -1,6 +1,6 @@
 import type { RegexMatch } from '@/types/common';
 
-interface MatchListProps {
+export interface MatchListProps {
   matches: RegexMatch[];
 }
 

@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 import { cn } from '@/utils/cn';
 
-interface MarkdownEditorProps {
+export interface MarkdownEditorProps {
   value: string;
   onChange: (value: string) => void;
   textareaRef: React.RefObject<HTMLTextAreaElement>;

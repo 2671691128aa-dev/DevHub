@@ -2,7 +2,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { cn } from '@/utils/cn';
 
-interface MarkdownPreviewProps {
+export interface MarkdownPreviewProps {
   content: string;
   className?: string;
 }

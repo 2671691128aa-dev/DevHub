@@ -1,8 +1,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { get, set } from 'idb-keyval';
+import type { MarkdownViewMode } from '@/types/chat';
 import { getWordCount, getReadingTime, getLineCount, exportAsHtml } from '../utils/parser';
-
-type ViewMode = 'split' | 'editor' | 'preview';
 
 const DEFAULT_CONTENT = '# 欢迎使用 Markdown 编辑器\n\n开始编写你的文档...\n\n## 功能\n\n- 实时预览\n- 工具栏快捷操作\n- 导出 HTML\n- 自动保存到 IndexedDB（无容量限制）\n';
 
@@ -10,7 +9,7 @@ const STORAGE_KEY = 'devhub-markdown-content';
 
 export function useMarkdownEditor() {
   const [content, setContent] = useState(DEFAULT_CONTENT);
-  const [viewMode, setViewMode] = useState<ViewMode>('split');
+  const [viewMode, setViewMode] = useState<MarkdownViewMode>('split');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Load saved content from IndexedDB on mount
