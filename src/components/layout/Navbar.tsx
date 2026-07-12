@@ -18,7 +18,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-bg-primary backdrop-blur-xl bg-opacity-90">
+    <header className="sticky top-0 z-50 border-b border-border backdrop-blur-xl" style={{ backgroundColor: 'var(--bg-primary-90)' }}>
       <nav className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 font-semibold text-text-primary">

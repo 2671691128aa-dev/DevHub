@@ -1,19 +1,38 @@
-import { useState, useMemo, useCallback, useRef } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import { get, set } from 'idb-keyval';
 import { getWordCount, getReadingTime, getLineCount, exportAsHtml } from '../utils/parser';
 
 type ViewMode = 'split' | 'editor' | 'preview';
 
+const DEFAULT_CONTENT = '# 欢迎使用 Markdown 编辑器\n\n开始编写你的文档...\n\n## 功能\n\n- 实时预览\n- 工具栏快捷操作\n- 导出 HTML\n- 自动保存到 IndexedDB（无容量限制）\n';
+
+const STORAGE_KEY = 'devhub-markdown-content';
+
 export function useMarkdownEditor() {
-  const [content, setContent] = useState(() => {
-    const saved = localStorage.getItem('devhub-markdown-content');
-    return saved || '# 欢迎使用 Markdown 编辑器\n\n开始编写你的文档...\n\n## 功能\n\n- 实时预览\n- 工具栏快捷操作\n- 导出 HTML\n- 自动保存\n';
-  });
+  const [content, setContent] = useState(DEFAULT_CONTENT);
   const [viewMode, setViewMode] = useState<ViewMode>('split');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Load saved content from IndexedDB on mount
+  useEffect(() => {
+    get<string>(STORAGE_KEY).then((saved) => {
+      if (saved) setContent(saved);
+    });
+  }, []);
+
+  // Debounced save to IndexedDB
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const handleContentChange = useCallback((value: string) => {
     setContent(value);
-    localStorage.setItem('devhub-markdown-content', value);
+    clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      set(STORAGE_KEY, value);
+    }, 500);
+  }, []);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => clearTimeout(saveTimerRef.current);
   }, []);
 
   const stats = useMemo(() => {

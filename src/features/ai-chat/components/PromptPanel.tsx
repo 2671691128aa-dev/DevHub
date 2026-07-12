@@ -1,6 +1,6 @@
 import { cn } from '@/utils/cn';
 import { useChatStore } from '@/store/useChatStore';
-import { promptTemplates } from '../data/promptTemplates';
+import { PROMPT_TEMPLATES } from '@/constants/prompt-templates';
 import type { PromptTemplate } from '@/types/chat';
 
 const categoryLabels: Record<string, string> = {
@@ -22,7 +22,7 @@ export function PromptPanel() {
       <p className="mt-0.5 text-xs text-text-muted">点击快速填充</p>
 
       {(['coding', 'writing', 'analysis'] as const).map((cat) => {
-        const templates = promptTemplates.filter((t) => t.category === cat);
+        const templates = PROMPT_TEMPLATES.filter((t) => t.category === cat);
         return (
           <div key={cat} className="mt-4">
             <div className="text-xs font-medium text-text-muted">{categoryLabels[cat]}</div>

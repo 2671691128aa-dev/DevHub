@@ -18,6 +18,7 @@
   --error: #DC2626;
   --border: #E4E4E7;
   --border-hover: #D4D4D8;
+  --bg-primary-90: rgba(255, 255, 255, 0.9);
 }
 
 /* Dark theme */
@@ -36,6 +37,7 @@
   --error: #EF4444;
   --border: #27272A;
   --border-hover: #3F3F46;
+  --bg-primary-90: rgba(9, 9, 11, 0.9);
 }
 
 body {

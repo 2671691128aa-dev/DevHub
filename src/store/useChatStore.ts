@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
+import { get, set, del } from 'idb-keyval';
 import type { Conversation, ChatSettings, Message } from '@/types/chat';
 
 const defaultSettings: ChatSettings = {
@@ -13,21 +14,40 @@ const defaultSettings: ChatSettings = {
   systemPrompt: '你是一个专业的开发者助手，擅长编程、调试和技术问题解答。',
 };
 
+// IndexedDB-backed storage for Zustand persist
+// Why IndexedDB? localStorage has ~5MB limit, chat history with AI responses
+// can easily exceed that. IndexedDB has no practical limit.
+const indexedDBStorage: StateStorage = {
+  getItem: async (name: string): Promise<string | null> => {
+    return (await get(name)) ?? null;
+  },
+  setItem: async (name: string, value: string): Promise<void> => {
+    await set(name, value);
+  },
+  removeItem: async (name: string): Promise<void> => {
+    await del(name);
+  },
+};
+
 interface ChatStore {
   conversations: Conversation[];
   activeConversationId: string | null;
   isStreaming: boolean;
   settings: ChatSettings;
   isSettingsOpen: boolean;
+  isHydrated: boolean;
 
   createConversation: () => string;
   deleteConversation: (id: string) => void;
   setActiveConversation: (id: string) => void;
   addMessage: (conversationId: string, message: Message) => void;
+  updateMessageStatus: (conversationId: string, messageId: string, status: 'pending' | 'sent' | 'failed') => void;
   updateLastAssistantMessage: (conversationId: string, chunk: string) => void;
+  removeLastAssistantMessage: (conversationId: string) => void;
   setStreaming: (streaming: boolean) => void;
   updateSettings: (settings: Partial<ChatSettings>) => void;
   setSettingsOpen: (open: boolean) => void;
+  setHydrated: (hydrated: boolean) => void;
   getActiveConversation: () => Conversation | null;
 }
 
@@ -39,6 +59,7 @@ export const useChatStore = create<ChatStore>()(
       isStreaming: false,
       settings: defaultSettings,
       isSettingsOpen: false,
+      isHydrated: false,
 
       createConversation: () => {
         const id = crypto.randomUUID();
@@ -83,6 +104,33 @@ export const useChatStore = create<ChatStore>()(
         }));
       },
 
+      updateMessageStatus: (conversationId, messageId, status) => {
+        set((state) => ({
+          conversations: state.conversations.map((c) => {
+            if (c.id !== conversationId) return c;
+            return {
+              ...c,
+              messages: c.messages.map((m) =>
+                m.id === messageId ? { ...m, status } : m
+              ),
+              updatedAt: Date.now(),
+            };
+          }),
+        }));
+      },
+
+      removeLastAssistantMessage: (conversationId) => {
+        set((state) => ({
+          conversations: state.conversations.map((c) => {
+            if (c.id !== conversationId) return c;
+            const messages = c.messages.filter(
+              (m, i) => !(m.role === 'assistant' && i === c.messages.length - 1)
+            );
+            return { ...c, messages, updatedAt: Date.now() };
+          }),
+        }));
+      },
+
       updateLastAssistantMessage: (conversationId, chunk) => {
         set((state) => ({
           conversations: state.conversations.map((c) => {
@@ -101,6 +149,7 @@ export const useChatStore = create<ChatStore>()(
       updateSettings: (partial) =>
         set((state) => ({ settings: { ...state.settings, ...partial } })),
       setSettingsOpen: (open) => set({ isSettingsOpen: open }),
+      setHydrated: (hydrated) => set({ isHydrated: hydrated }),
 
       getActiveConversation: () => {
         const state = get();
@@ -109,11 +158,17 @@ export const useChatStore = create<ChatStore>()(
     }),
     {
       name: 'devhub-chat',
+      storage: createJSONStorage(() => indexedDBStorage),
       partialize: (state) => ({
         conversations: state.conversations,
         activeConversationId: state.activeConversationId,
         settings: state.settings,
       }),
+      onRehydrateStorage: () => {
+        return (state) => {
+          state?.setHydrated(true);
+        };
+      },
     },
   ),
 );

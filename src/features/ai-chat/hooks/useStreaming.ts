@@ -6,7 +6,8 @@ import type { Message } from '@/types/chat';
 export function useStreaming() {
   const abortRef = useRef<AbortController | null>(null);
   const {
-    addMessage, updateLastAssistantMessage, setStreaming, settings,
+    addMessage, updateMessageStatus, updateLastAssistantMessage,
+    removeLastAssistantMessage, setStreaming, settings,
     getActiveConversation, createConversation,
   } = useChatStore();
 
@@ -14,14 +15,17 @@ export function useStreaming() {
     async (content: string) => {
       const conversationId = getActiveConversation()?.id ?? createConversation();
 
+      // 1. 乐观更新：先把用户消息显示在 UI 上，标记为 pending
       const userMessage: Message = {
         id: crypto.randomUUID(),
         role: 'user',
         content,
         timestamp: Date.now(),
+        status: 'pending',
       };
       addMessage(conversationId, userMessage);
 
+      // 2. 添加一个空的 AI 回复占位
       const assistantMessage: Message = {
         id: crypto.randomUUID(),
         role: 'assistant',
@@ -41,16 +45,21 @@ export function useStreaming() {
         await sendMessage(history, settings, (chunk) => {
           updateLastAssistantMessage(conversationId, chunk);
         }, controller.signal);
+
+        // 3. 成功：标记用户消息为 sent
+        updateMessageStatus(conversationId, userMessage.id, 'sent');
       } catch (e) {
         if ((e as Error).name !== 'AbortError') {
-          updateLastAssistantMessage(conversationId, `\n\n---\n⚠️ 错误: ${(e as Error).message}`);
+          // 4. 失败：标记用户消息为 failed，删除空的 AI 回复
+          updateMessageStatus(conversationId, userMessage.id, 'failed');
+          removeLastAssistantMessage(conversationId);
         }
       } finally {
         setStreaming(false);
         abortRef.current = null;
       }
     },
-    [addMessage, updateLastAssistantMessage, setStreaming, settings, getActiveConversation, createConversation],
+    [addMessage, updateMessageStatus, updateLastAssistantMessage, removeLastAssistantMessage, setStreaming, settings, getActiveConversation, createConversation],
   );
 
   const stop = useCallback(() => {

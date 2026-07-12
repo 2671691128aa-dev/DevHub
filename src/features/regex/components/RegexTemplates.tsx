@@ -1,5 +1,5 @@
 import { cn } from '@/utils/cn';
-import { regexTemplates } from '../data/templates';
+import { REGEX_TEMPLATES } from '@/constants/regex-templates';
 
 interface RegexTemplatesProps {
   onSelect: (pattern: string) => void;
@@ -9,7 +9,7 @@ interface RegexTemplatesProps {
 export function RegexTemplates({ onSelect, selectedId }: RegexTemplatesProps) {
   return (
     <div className="flex flex-wrap gap-2">
-      {regexTemplates.map((template) => (
+      {REGEX_TEMPLATES.map((template) => (
         <button
           key={template.id}
           onClick={() => onSelect(template.pattern)}

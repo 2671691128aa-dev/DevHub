@@ -2,58 +2,8 @@ import { X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useChatStore } from '@/store/useChatStore';
-import type { AIProvider } from '@/types/chat';
+import { AI_PROVIDERS } from '@/constants/ai-providers';
 import { cn } from '@/utils/cn';
-
-const providers: { id: AIProvider; name: string; defaultBase: string; keyPlaceholder: string }[] = [
-  { id: 'anthropic', name: 'Anthropic', defaultBase: '', keyPlaceholder: 'sk-ant-...' },
-  { id: 'openai-compatible', name: 'DeepSeek', defaultBase: 'https://api.deepseek.com', keyPlaceholder: 'sk-...' },
-  { id: 'openai-compatible', name: '通义千问', defaultBase: 'https://dashscope.aliyuncs.com/compatible-mode', keyPlaceholder: 'sk-...' },
-  { id: 'openai-compatible', name: '智谱 GLM', defaultBase: 'https://open.bigmodel.cn/api/paas', keyPlaceholder: '...' },
-  { id: 'openai-compatible', name: '月之暗面', defaultBase: 'https://api.moonshot.cn', keyPlaceholder: 'sk-...' },
-  { id: 'openai-compatible', name: '自定义', defaultBase: '', keyPlaceholder: 'API Key' },
-];
-
-const modelOptions: Record<string, { label: string; value: string }[]> = {
-  anthropic: [
-    { label: 'Claude Fable 5', value: 'claude-fable-5' },
-    { label: 'Claude Opus 4.8', value: 'claude-opus-4-8' },
-    { label: 'Claude Sonnet 4', value: 'claude-sonnet-4-20250514' },
-    { label: 'Claude Haiku 3.5', value: 'claude-haiku-4-20250414' },
-    { label: 'Claude 3.5 Sonnet', value: 'claude-3-5-sonnet-20241022' },
-  ],
-  deepseek: [
-    { label: 'DeepSeek-V3', value: 'deepseek-chat' },
-    { label: 'DeepSeek-R1', value: 'deepseek-reasoner' },
-  ],
-  qwen: [
-    { label: 'Qwen-Max', value: 'qwen-max' },
-    { label: 'Qwen-Plus', value: 'qwen-plus' },
-    { label: 'Qwen-Turbo', value: 'qwen-turbo' },
-  ],
-  glm: [
-    { label: 'GLM-4-Plus', value: 'glm-4-plus' },
-    { label: 'GLM-4', value: 'glm-4' },
-    { label: 'GLM-4-Flash', value: 'glm-4-flash' },
-  ],
-  moonshot: [
-    { label: 'Moonshot-v1-128k', value: 'moonshot-v1-128k' },
-    { label: 'Moonshot-v1-32k', value: 'moonshot-v1-32k' },
-    { label: 'Moonshot-v1-8k', value: 'moonshot-v1-8k' },
-  ],
-  custom: [],
-};
-
-function getModelList(name: string) {
-  switch (name) {
-    case 'Anthropic': return modelOptions.anthropic;
-    case 'DeepSeek': return modelOptions.deepseek;
-    case '通义千问': return modelOptions.qwen;
-    case '智谱 GLM': return modelOptions.glm;
-    case '月之暗面': return modelOptions.moonshot;
-    default: return [];
-  }
-}
 
 export function SettingsPanel() {
   const settings = useChatStore((s) => s.settings);
@@ -63,17 +13,16 @@ export function SettingsPanel() {
 
   if (!isSettingsOpen) return null;
 
-  const currentProvider = providers.find((p) => p.name === settings.providerName) ?? providers[0];
-  const models = getModelList(settings.providerName ?? 'Anthropic');
+  const currentProvider = AI_PROVIDERS.find((p) => p.name === settings.providerName) ?? AI_PROVIDERS[0];
+  const models = currentProvider.models;
 
   const handleProviderChange = (name: string) => {
-    const provider = providers.find((p) => p.name === name)!;
-    const models = getModelList(name);
+    const provider = AI_PROVIDERS.find((p) => p.name === name)!;
     updateSettings({
       providerName: name,
       provider: provider.id,
       baseUrl: provider.defaultBase,
-      model: models[0]?.value ?? '',
+      model: provider.models[0]?.value ?? '',
       apiKey: '',
     });
   };
@@ -93,7 +42,7 @@ export function SettingsPanel() {
           <div>
             <label className="block text-sm font-medium text-text-secondary mb-1.5">模型服务商</label>
             <div className="grid grid-cols-3 gap-2">
-              {providers.map((p) => (
+              {AI_PROVIDERS.map((p) => (
                 <button
                   key={p.name}
                   onClick={() => handleProviderChange(p.name)}
@@ -110,25 +59,14 @@ export function SettingsPanel() {
             </div>
           </div>
 
-          {/* Base URL (only for openai-compatible) */}
-          {settings.provider === 'openai-compatible' && settings.providerName !== '自定义' && (
+          {/* Base URL */}
+          {settings.provider === 'openai-compatible' && (
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1.5">API Base URL</label>
               <Input
                 value={settings.baseUrl}
                 onChange={(e) => updateSettings({ baseUrl: e.target.value })}
-                placeholder={currentProvider.defaultBase}
-              />
-            </div>
-          )}
-
-          {settings.providerName === '自定义' && (
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1.5">API Base URL</label>
-              <Input
-                value={settings.baseUrl}
-                onChange={(e) => updateSettings({ baseUrl: e.target.value })}
-                placeholder="https://your-api.com"
+                placeholder={currentProvider.defaultBase || 'https://your-api.com'}
               />
             </div>
           )}

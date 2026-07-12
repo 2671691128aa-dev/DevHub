@@ -25,7 +25,7 @@ export function ChatContainer() {
         ) : (
           <>
             {conversation.messages.map((msg) => (
-              <MessageBubble key={msg.id} message={msg} />
+              <MessageBubble key={msg.id} message={msg} onRetry={handleSend} />
             ))}
             <div ref={messagesEndRef} />
           </>
