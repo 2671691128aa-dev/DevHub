@@ -7,9 +7,18 @@ export interface ChatInputProps {
   onStop: () => void;
   isStreaming: boolean;
   disabled?: boolean;
+  pendingPromptText?: string | null;
+  onPromptHandled?: () => void;
 }
 
-export function ChatInput({ onSend, onStop, isStreaming, disabled }: ChatInputProps) {
+export function ChatInput({
+  onSend,
+  onStop,
+  isStreaming,
+  disabled,
+  pendingPromptText,
+  onPromptHandled,
+}: ChatInputProps) {
   const [input, setInput] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -19,6 +28,22 @@ export function ChatInput({ onSend, onStop, isStreaming, disabled }: ChatInputPr
       textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
     }
   }, [input]);
+
+  useEffect(() => {
+    if (pendingPromptText === null || pendingPromptText === undefined) return;
+    if (!pendingPromptText) {
+      onPromptHandled?.();
+      return;
+    }
+    setInput((prev) => {
+      if (!prev) return pendingPromptText;
+      return `${prev}\n${pendingPromptText}`;
+    });
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+    onPromptHandled?.();
+  }, [pendingPromptText, onPromptHandled]);
 
   const handleSubmit = () => {
     if (isStreaming) return;
@@ -44,7 +69,7 @@ export function ChatInput({ onSend, onStop, isStreaming, disabled }: ChatInputPr
         placeholder={disabled ? '请先设置 API Key...' : '输入消息，Enter 发送，Shift+Enter 换行...'}
         disabled={disabled}
         rows={1}
-        className="flex-1 resize-none bg-transparent text-sm text-text-primary outline-none placeholder:text-text-muted min-h-[24px] max-h-[200px]"
+        className="max-h-[200px] min-h-[24px] flex-1 resize-none bg-transparent text-sm text-text-primary outline-none placeholder:text-text-muted"
       />
       {isStreaming ? (
         <Button variant="ghost" size="sm" onClick={onStop}>

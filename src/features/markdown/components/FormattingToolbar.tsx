@@ -1,5 +1,15 @@
 import {
-  Bold, Italic, Heading1, Heading2, Link, Image, Code, List, ListOrdered, Quote, Minus,
+  Bold,
+  Italic,
+  Heading1,
+  Heading2,
+  Link,
+  Image,
+  Code,
+  List,
+  ListOrdered,
+  Quote,
+  Minus,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 

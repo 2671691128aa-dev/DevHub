@@ -8,6 +8,7 @@
  * - IndexedDB has no practical limit (typically 50MB+)
  */
 import { get, set, del } from 'idb-keyval';
+import type { StateStorage } from 'zustand/middleware';
 
 // --- IndexedDB (for large data: conversations, markdown content) ---
 
@@ -61,5 +62,20 @@ export const localStore = {
 
   remove(key: string): void {
     localStorage.removeItem(key);
+  },
+};
+
+// --- Zustand persist adapter (IndexedDB-backed) ---
+// Shared across all Zustand stores that use persist middleware with IndexedDB.
+
+export const indexedDBStorage: StateStorage = {
+  getItem: async (name: string): Promise<string | null> => {
+    return (await get(name)) ?? null;
+  },
+  setItem: async (name: string, value: string): Promise<void> => {
+    await set(name, value);
+  },
+  removeItem: async (name: string): Promise<void> => {
+    await del(name);
   },
 };

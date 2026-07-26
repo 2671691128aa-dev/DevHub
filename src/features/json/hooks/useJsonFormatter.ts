@@ -1,17 +1,17 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
-import type { TreeNode, JsonStats, JsonWorkerResponse, JsonViewMode } from '@/types/common';
+import type { JsonStats, JsonWorkerResponse, JsonViewMode, JsonWorkerResult } from '@/types/common';
 import { validateJson } from '../utils/validator';
-import { formatJson, minifyJson, buildTree, countKeys, getDepth, formatSize } from '../utils/formatter';
+import {
+  formatJson,
+  minifyJson,
+  buildTree,
+  countKeys,
+  getDepth,
+  formatSize,
+} from '../utils/formatter';
 
 // Threshold: use worker for input larger than 100KB
 const WORKER_THRESHOLD = 100 * 1024;
-
-interface WorkerResult {
-  output: string;
-  tree: TreeNode | null;
-  validation: { valid: true } | { valid: false; error: { message: string; line: number; column: number } };
-  stats: JsonStats;
-}
 
 export function useJsonFormatter() {
   const [input, setInput] = useState('');
@@ -20,7 +20,7 @@ export function useJsonFormatter() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Worker result state (for large files)
-  const [workerResult, setWorkerResult] = useState<WorkerResult | null>(null);
+  const [workerResult, setWorkerResult] = useState<JsonWorkerResult | null>(null);
 
   const workerRef = useRef<Worker | null>(null);
   const requestIdRef = useRef(0);
@@ -28,10 +28,9 @@ export function useJsonFormatter() {
   // Initialize worker lazily
   const getWorker = useCallback(() => {
     if (!workerRef.current) {
-      workerRef.current = new Worker(
-        new URL('../workers/jsonWorker.ts', import.meta.url),
-        { type: 'module' }
-      );
+      workerRef.current = new Worker(new URL('../workers/jsonWorker.ts', import.meta.url), {
+        type: 'module',
+      });
     }
     return workerRef.current;
   }, []);
@@ -44,55 +43,67 @@ export function useJsonFormatter() {
   }, []);
 
   // Process input — use worker for large files, main thread for small
-  const processInput = useCallback((value: string) => {
-    const size = new Blob([value]).size;
+  const processInput = useCallback(
+    (value: string) => {
+      const size = new Blob([value]).size;
 
-    if (size < WORKER_THRESHOLD) {
-      // Small file: process on main thread (fast enough)
-      setWorkerResult(null);
-      return;
-    }
-
-    // Large file: delegate to worker
-    const worker = getWorker();
-    const id = ++requestIdRef.current;
-    setIsProcessing(true);
-
-    const handler = (e: MessageEvent<JsonWorkerResponse>) => {
-      if (e.data.id !== id) return;
-      worker.removeEventListener('message', handler);
-      setIsProcessing(false);
-
-      if (e.data.success && e.data.data) {
-        setWorkerResult({
-          output: e.data.data.output,
-          tree: e.data.data.tree,
-          validation: e.data.data.isValid
-            ? { valid: true }
-            : { valid: false, error: e.data.data.error ?? { message: 'Unknown error', line: 0, column: 0 } },
-          stats: e.data.data.stats,
-        });
-      } else {
-        setWorkerResult({
-          output: '',
-          tree: null,
-          validation: { valid: false, error: { message: e.data.error ?? 'Unknown error', line: 0, column: 0 } },
-          stats: { lines: 0, size: '0 B', depth: 0, keys: 0 },
-        });
+      if (size < WORKER_THRESHOLD) {
+        // Small file: process on main thread (fast enough)
+        setWorkerResult(null);
+        return;
       }
-    };
 
-    worker.addEventListener('message', handler);
-    worker.postMessage({ id, type: 'format', input: value, indent });
-  }, [getWorker, indent]);
+      // Large file: delegate to worker
+      const worker = getWorker();
+      const id = ++requestIdRef.current;
+      setIsProcessing(true);
+
+      const handler = (e: MessageEvent<JsonWorkerResponse>) => {
+        if (e.data.id !== id) return;
+        worker.removeEventListener('message', handler);
+        setIsProcessing(false);
+
+        if (e.data.success && e.data.data) {
+          setWorkerResult({
+            output: e.data.data.output,
+            tree: e.data.data.tree,
+            validation: e.data.data.isValid
+              ? { valid: true }
+              : {
+                  valid: false,
+                  error: e.data.data.error ?? { message: 'Unknown error', line: 0, column: 0 },
+                },
+            stats: e.data.data.stats,
+          });
+        } else {
+          setWorkerResult({
+            output: '',
+            tree: null,
+            validation: {
+              valid: false,
+              error: { message: e.data.error ?? 'Unknown error', line: 0, column: 0 },
+            },
+            stats: { lines: 0, size: '0 B', depth: 0, keys: 0 },
+          });
+        }
+      };
+
+      worker.addEventListener('message', handler);
+      worker.postMessage({ id, type: 'format', input: value, indent });
+    },
+    [getWorker, indent],
+  );
 
   // Trigger processing on input change with debounce
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
-  const handleInputChange = useCallback((value: string) => {
-    setInput(value);
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => processInput(value), 150);
-  }, [processInput]);
+  const handleInputChange = useCallback(
+    (value: string) => {
+      setInput(value);
+      clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => processInput(value), 150);
+    },
+    [processInput],
+  );
 
   // Cleanup debounce on unmount
   useEffect(() => {
@@ -102,45 +113,45 @@ export function useJsonFormatter() {
   // For small files: compute on main thread
   const isUsingWorker = workerResult !== null;
 
-  const validation = isUsingWorker
-    ? workerResult.validation
-    : useMemo(() => validateJson(input), [input]);
+  // Always call useMemo unconditionally (React Hooks rules)
+  const computedValidation = useMemo(() => validateJson(input), [input]);
+  const computedOutput = useMemo(() => {
+    if (!input.trim() || !computedValidation.valid) return '';
+    return formatJson(input, indent);
+  }, [input, indent, computedValidation.valid]);
+  const computedTree = useMemo(() => {
+    if (!input.trim() || !computedValidation.valid) return null;
+    try {
+      return buildTree(JSON.parse(input));
+    } catch {
+      return null;
+    }
+  }, [input, computedValidation.valid]);
+  const computedStats: JsonStats = useMemo(() => {
+    if (!input.trim()) return { lines: 0, size: '0 B', depth: 0, keys: 0 };
+    try {
+      const parsed = JSON.parse(input);
+      const formatted = formatJson(input, indent);
+      return {
+        lines: formatted.split('\n').length,
+        size: formatSize(new Blob([input]).size),
+        depth: getDepth(parsed),
+        keys: countKeys(parsed),
+      };
+    } catch {
+      return {
+        lines: input.split('\n').length,
+        size: formatSize(new Blob([input]).size),
+        depth: 0,
+        keys: 0,
+      };
+    }
+  }, [input, indent]);
 
-  const output = isUsingWorker
-    ? workerResult.output
-    : useMemo(() => {
-        if (!input.trim() || !validation.valid) return '';
-        return formatJson(input, indent);
-      }, [input, indent, validation.valid]);
-
-  const tree = isUsingWorker
-    ? workerResult.tree
-    : useMemo(() => {
-        if (!input.trim() || !validation.valid) return null;
-        try {
-          return buildTree(JSON.parse(input));
-        } catch {
-          return null;
-        }
-      }, [input, validation.valid]);
-
-  const stats: JsonStats = isUsingWorker
-    ? workerResult.stats
-    : useMemo(() => {
-        if (!input.trim()) return { lines: 0, size: '0 B', depth: 0, keys: 0 };
-        try {
-          const parsed = JSON.parse(input);
-          const formatted = formatJson(input, indent);
-          return {
-            lines: formatted.split('\n').length,
-            size: formatSize(new Blob([input]).size),
-            depth: getDepth(parsed),
-            keys: countKeys(parsed),
-          };
-        } catch {
-          return { lines: input.split('\n').length, size: formatSize(new Blob([input]).size), depth: 0, keys: 0 };
-        }
-      }, [input, indent]);
+  const validation = isUsingWorker ? workerResult.validation : computedValidation;
+  const output = isUsingWorker ? workerResult.output : computedOutput;
+  const tree = isUsingWorker ? workerResult.tree : computedTree;
+  const stats: JsonStats = isUsingWorker ? workerResult.stats : computedStats;
 
   const handleFormat = useCallback(() => {
     if (validation.valid && input.trim()) {

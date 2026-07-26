@@ -1,66 +1,62 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { Bot, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { Breadcrumb } from '@/components/layout/Breadcrumb';
+import { ErrorFallback } from '@/components/shared/ErrorFallback';
+import { ToolPageHeader } from '@/components/shared/ToolPageHeader';
 import { ChatContainer } from '@/features/ai-chat/components/ChatContainer';
 import { PromptPanel } from '@/features/ai-chat/components/PromptPanel';
 import { ConversationList } from '@/features/ai-chat/components/ConversationList';
 import { SettingsPanel } from '@/features/ai-chat/components/SettingsPanel';
-import { useChatStore } from '@/store/useChatStore';
-import { ROUTES } from '@/constants/routes';
-import { PROMPT_INSERT_EVENT } from '@/constants/defaults';
+import { useAppStore } from '@/store/useAppStore';
 
 export function AiChatPage() {
-  const setSettingsOpen = useChatStore((s) => s.setSettingsOpen);
+  const setSettingsOpen = useAppStore((s) => s.setSettingsOpen);
+  const [pendingPromptText, setPendingPromptText] = useState<string | null>(null);
 
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const prompt = (e as CustomEvent).detail as string;
-      const textarea = document.querySelector('textarea[placeholder*="输入消息"]') as HTMLTextAreaElement | null;
-      if (textarea) {
-        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
-        nativeInputValueSetter?.call(textarea, prompt);
-        textarea.dispatchEvent(new Event('input', { bubbles: true }));
-        textarea.focus();
-      }
-    };
-    window.addEventListener(PROMPT_INSERT_EVENT, handler);
-    return () => window.removeEventListener(PROMPT_INSERT_EVENT, handler);
-  }, []);
+  const handlePromptInsert = (text: string) => {
+    setPendingPromptText(text);
+  };
+
+  const handlePromptHandled = () => {
+    setPendingPromptText(null);
+  };
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-6">
-      <Breadcrumb items={[
-        { label: '工具', path: ROUTES.TOOLS },
-        { label: 'AI 聊天助手' },
-      ]} />
+    <ErrorBoundary
+      FallbackComponent={(props) => (
+        <ErrorFallback {...props} variant="section" title="AI 聊天组件出错" />
+      )}
+    >
+      <div className="mx-auto max-w-7xl px-6 py-6">
+        <ToolPageHeader
+          icon={Bot}
+          title="AI 聊天助手"
+          actions={
+            <Button variant="secondary" size="sm" onClick={() => setSettingsOpen(true)}>
+              <Settings className="h-3.5 w-3.5" />
+              设置
+            </Button>
+          }
+        />
 
-      <div className="mt-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10 text-accent">
-            <Bot className="h-5 w-5" />
+        <div className="mt-4 flex gap-4">
+          <div className="hidden lg:block">
+            <ConversationList />
           </div>
-          <h1 className="text-xl font-semibold">AI 聊天助手</h1>
+          <div className="min-w-0 flex-1">
+            <ChatContainer
+              pendingPromptText={pendingPromptText}
+              onPromptHandled={handlePromptHandled}
+            />
+          </div>
+          <div className="hidden xl:block">
+            <PromptPanel onInsert={handlePromptInsert} />
+          </div>
         </div>
-        <Button variant="secondary" size="sm" onClick={() => setSettingsOpen(true)}>
-          <Settings className="h-3.5 w-3.5" />
-          设置
-        </Button>
-      </div>
 
-      <div className="mt-4 flex gap-4">
-        <div className="hidden lg:block">
-          <ConversationList />
-        </div>
-        <div className="flex-1 min-w-0">
-          <ChatContainer />
-        </div>
-        <div className="hidden xl:block">
-          <PromptPanel />
-        </div>
+        <SettingsPanel />
       </div>
-
-      <SettingsPanel />
-    </div>
+    </ErrorBoundary>
   );
 }

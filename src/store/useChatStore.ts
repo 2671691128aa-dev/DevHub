@@ -1,43 +1,54 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
-import { get, set, del } from 'idb-keyval';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { indexedDBStorage } from '@/lib/storage';
 import type { Conversation, ChatSettings, Message } from '@/types/chat';
-import { STORAGE_KEYS, DEFAULT_CHAT_SETTINGS, DEFAULT_CONVERSATION_TITLE } from '@/constants';
+import type { AIErrorCode } from '@/types/error';
+import {
+  STORAGE_KEYS,
+  DEFAULT_CHAT_SETTINGS,
+  DEFAULT_CONVERSATION_TITLE,
+  AI_ERROR_MESSAGES,
+} from '@/constants';
 
-// IndexedDB-backed storage for Zustand persist
-// Why IndexedDB? localStorage has ~5MB limit, chat history with AI responses
-// can easily exceed that. IndexedDB has no practical limit.
-const indexedDBStorage: StateStorage = {
-  getItem: async (name: string): Promise<string | null> => {
-    return (await get(name)) ?? null;
-  },
-  setItem: async (name: string, value: string): Promise<void> => {
-    await set(name, value);
-  },
-  removeItem: async (name: string): Promise<void> => {
-    await del(name);
-  },
-};
+/**
+ * Helper: apply a transform to a specific conversation within the array.
+ * Avoids repeating the `map → find-by-id → return others unchanged` pattern.
+ */
+function updateConversation(
+  conversations: Conversation[],
+  conversationId: string,
+  transform: (c: Conversation) => Conversation,
+): Conversation[] {
+  return conversations.map((c) => (c.id === conversationId ? transform(c) : c));
+}
 
 interface ChatStore {
   conversations: Conversation[];
   activeConversationId: string | null;
   isStreaming: boolean;
   settings: ChatSettings;
-  isSettingsOpen: boolean;
   isHydrated: boolean;
 
   createConversation: () => string;
   deleteConversation: (id: string) => void;
   setActiveConversation: (id: string) => void;
   addMessage: (conversationId: string, message: Message) => void;
-  updateMessageStatus: (conversationId: string, messageId: string, status: 'pending' | 'sent' | 'failed') => void;
+  updateMessageStatus: (
+    conversationId: string,
+    messageId: string,
+    status: 'pending' | 'sent' | 'failed',
+  ) => void;
   updateLastAssistantMessage: (conversationId: string, chunk: string) => void;
   removeLastAssistantMessage: (conversationId: string) => void;
   setStreaming: (streaming: boolean) => void;
   updateSettings: (settings: Partial<ChatSettings>) => void;
-  setSettingsOpen: (open: boolean) => void;
   setHydrated: (hydrated: boolean) => void;
+  updateMessageError: (
+    conversationId: string,
+    messageId: string,
+    errorCode: AIErrorCode,
+    attempt?: number,
+  ) => void;
   getActiveConversation: () => Conversation | null;
 }
 
@@ -48,7 +59,6 @@ export const useChatStore = create<ChatStore>()(
       activeConversationId: null,
       isStreaming: false,
       settings: DEFAULT_CHAT_SETTINGS,
-      isSettingsOpen: false,
       isHydrated: false,
 
       createConversation: () => {
@@ -83,12 +93,12 @@ export const useChatStore = create<ChatStore>()(
 
       addMessage: (conversationId, message) => {
         set((state) => ({
-          conversations: state.conversations.map((c) => {
-            if (c.id !== conversationId) return c;
+          conversations: updateConversation(state.conversations, conversationId, (c) => {
             const messages = [...c.messages, message];
-            const title = c.messages.length === 0 && message.role === 'user'
-              ? message.content.slice(0, 30) + (message.content.length > 30 ? '...' : '')
-              : c.title;
+            const title =
+              c.messages.length === 0 && message.role === 'user'
+                ? message.content.slice(0, 30) + (message.content.length > 30 ? '...' : '')
+                : c.title;
             return { ...c, messages, title, updatedAt: Date.now() };
           }),
         }));
@@ -96,35 +106,29 @@ export const useChatStore = create<ChatStore>()(
 
       updateMessageStatus: (conversationId, messageId, status) => {
         set((state) => ({
-          conversations: state.conversations.map((c) => {
-            if (c.id !== conversationId) return c;
-            return {
-              ...c,
-              messages: c.messages.map((m) =>
-                m.id === messageId ? { ...m, status } : m
-              ),
-              updatedAt: Date.now(),
-            };
-          }),
+          conversations: updateConversation(state.conversations, conversationId, (c) => ({
+            ...c,
+            messages: c.messages.map((m) => (m.id === messageId ? { ...m, status } : m)),
+            updatedAt: Date.now(),
+          })),
         }));
       },
 
       removeLastAssistantMessage: (conversationId) => {
         set((state) => ({
-          conversations: state.conversations.map((c) => {
-            if (c.id !== conversationId) return c;
-            const messages = c.messages.filter(
-              (m, i) => !(m.role === 'assistant' && i === c.messages.length - 1)
-            );
-            return { ...c, messages, updatedAt: Date.now() };
-          }),
+          conversations: updateConversation(state.conversations, conversationId, (c) => ({
+            ...c,
+            messages: c.messages.filter(
+              (m, i) => !(m.role === 'assistant' && i === c.messages.length - 1),
+            ),
+            updatedAt: Date.now(),
+          })),
         }));
       },
 
       updateLastAssistantMessage: (conversationId, chunk) => {
         set((state) => ({
-          conversations: state.conversations.map((c) => {
-            if (c.id !== conversationId) return c;
+          conversations: updateConversation(state.conversations, conversationId, (c) => {
             const messages = [...c.messages];
             const last = messages[messages.length - 1];
             if (last?.role === 'assistant') {
@@ -138,8 +142,26 @@ export const useChatStore = create<ChatStore>()(
       setStreaming: (streaming) => set({ isStreaming: streaming }),
       updateSettings: (partial) =>
         set((state) => ({ settings: { ...state.settings, ...partial } })),
-      setSettingsOpen: (open) => set({ isSettingsOpen: open }),
       setHydrated: (hydrated) => set({ isHydrated: hydrated }),
+
+      updateMessageError: (conversationId, messageId, errorCode, attempt) => {
+        const errorInfo = AI_ERROR_MESSAGES[errorCode];
+        const errorMessage = attempt
+          ? `${errorInfo.title}（重试 ${attempt}/${3}）`
+          : errorInfo.title;
+
+        set((state) => ({
+          conversations: updateConversation(state.conversations, conversationId, (c) => ({
+            ...c,
+            messages: c.messages.map((m) =>
+              m.id === messageId
+                ? { ...m, status: 'failed' as const, errorMessage, errorCode }
+                : m,
+            ),
+            updatedAt: Date.now(),
+          })),
+        }));
+      },
 
       getActiveConversation: () => {
         const state = get();

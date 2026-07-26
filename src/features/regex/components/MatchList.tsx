@@ -14,15 +14,17 @@ export function MatchList({ matches }: MatchListProps) {
   }
 
   return (
-    <div className="rounded-lg border border-border bg-bg-tertiary overflow-hidden">
+    <div className="overflow-hidden rounded-lg border border-border bg-bg-tertiary">
       <div className="border-b border-border px-4 py-2 text-xs font-medium text-text-muted">
         {matches.length} 个匹配
       </div>
       <div className="max-h-64 overflow-auto">
         {matches.map((match, i) => (
-          <div key={i} className="border-b border-border/50 px-4 py-2 last:border-0">
+          <div key={i} className="border-border/50 border-b px-4 py-2 last:border-0">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-text-muted">#{i + 1} (位置 {match.index})</span>
+              <span className="text-xs text-text-muted">
+                #{i + 1} (位置 {match.index})
+              </span>
               <code className="rounded bg-bg-secondary px-2 py-0.5 text-xs text-accent">
                 {match.fullMatch}
               </code>

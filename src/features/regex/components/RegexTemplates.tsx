@@ -16,13 +16,13 @@ export function RegexTemplates({ onSelect, selectedId }: RegexTemplatesProps) {
           className={cn(
             'rounded-lg border px-3 py-2 text-left transition-all hover:-translate-y-0.5',
             selectedId === template.id
-              ? 'border-accent bg-accent/10'
+              ? 'bg-accent/10 border-accent'
               : 'border-border bg-bg-secondary hover:border-border-hover',
           )}
           title={template.description}
         >
           <div className="text-sm font-medium text-text-primary">{template.name}</div>
-          <code className="mt-0.5 block text-xs text-text-muted truncate max-w-[180px]">
+          <code className="mt-0.5 block max-w-[180px] truncate text-xs text-text-muted">
             {template.pattern}
           </code>
         </button>

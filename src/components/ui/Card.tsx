@@ -10,7 +10,8 @@ function Card({ className, hoverable = false, ...props }: CardProps) {
     <div
       className={cn(
         'rounded-xl border border-border bg-bg-secondary p-6 transition-all duration-200',
-        hoverable && 'hover:border-border-hover hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20 cursor-pointer',
+        hoverable &&
+          'cursor-pointer hover:-translate-y-0.5 hover:border-border-hover hover:shadow-lg hover:shadow-black/20',
         className,
       )}
       {...props}

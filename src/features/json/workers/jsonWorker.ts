@@ -2,7 +2,14 @@
 // to prevent UI blocking on large files (10MB+)
 
 import type { JsonWorkerRequest, JsonWorkerResponse, TreeNode } from '@/types/common';
-import { formatJson, minifyJson, buildTree, countKeys, getDepth, formatSize } from '../utils/formatter';
+import {
+  formatJson,
+  minifyJson,
+  buildTree,
+  countKeys,
+  getDepth,
+  formatSize,
+} from '../utils/formatter';
 import { validateJson } from '../utils/validator';
 
 self.onmessage = (e: MessageEvent<JsonWorkerRequest>) => {
@@ -21,7 +28,12 @@ self.onmessage = (e: MessageEvent<JsonWorkerRequest>) => {
           tree: null,
           isValid: false,
           error: validation.error,
-          stats: { lines: input.split('\n').length, size: formatSize(new Blob([input]).size), depth: 0, keys: 0 },
+          stats: {
+            lines: input.split('\n').length,
+            size: formatSize(new Blob([input]).size),
+            depth: 0,
+            keys: 0,
+          },
         },
       } satisfies JsonWorkerResponse);
       return;
@@ -69,7 +81,12 @@ self.onmessage = (e: MessageEvent<JsonWorkerRequest>) => {
           tree: null,
           isValid: true,
           error: null,
-          stats: { lines: output.split('\n').length, size: formatSize(new Blob([input]).size), depth: 0, keys: 0 },
+          stats: {
+            lines: output.split('\n').length,
+            size: formatSize(new Blob([input]).size),
+            depth: 0,
+            keys: 0,
+          },
         },
       } satisfies JsonWorkerResponse);
     }

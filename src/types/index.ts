@@ -1,8 +1,4 @@
-export type {
-  ToolCategory,
-  Tool,
-  ToolCategoryConfig,
-} from './tool';
+export type { ToolCategory, Tool, ToolCategoryConfig } from './tool';
 
 export type {
   Message,
@@ -26,5 +22,10 @@ export type {
   RegexTemplate,
   JsonWorkerRequest,
   JsonWorkerResponse,
+  JsonWorkerResult,
   JsonViewMode,
 } from './common';
+
+export type { AIErrorCode, AIError, ErrorMessage } from './error';
+
+export type { UserProfile, ToolHistoryEntry, UsageStats } from './user';

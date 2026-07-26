@@ -50,6 +50,3 @@ export const MARKDOWN_EXPORT_LANG = 'zh-CN';
 
 /** Words per minute for reading time calculation */
 export const READING_WPM = 300;
-
-/** Custom event name for prompt insertion */
-export const PROMPT_INSERT_EVENT = 'devhub:insert-prompt';

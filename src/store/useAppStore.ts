@@ -6,10 +6,12 @@ type Theme = 'light' | 'dark';
 
 interface AppState {
   isCommandPaletteOpen: boolean;
+  isSettingsOpen: boolean;
   theme: Theme;
   openCommandPalette: () => void;
   closeCommandPalette: () => void;
   toggleCommandPalette: () => void;
+  setSettingsOpen: (open: boolean) => void;
   setTheme: (theme: Theme) => void;
   toggleTheme: () => void;
 }
@@ -31,11 +33,13 @@ export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
       isCommandPaletteOpen: false,
+      isSettingsOpen: false,
       theme: savedTheme ?? DEFAULT_THEME,
       openCommandPalette: () => set({ isCommandPaletteOpen: true }),
       closeCommandPalette: () => set({ isCommandPaletteOpen: false }),
       toggleCommandPalette: () =>
         set((state) => ({ isCommandPaletteOpen: !state.isCommandPaletteOpen })),
+      setSettingsOpen: (open) => set({ isSettingsOpen: open }),
       setTheme: (theme) => {
         applyTheme(theme);
         set({ theme });

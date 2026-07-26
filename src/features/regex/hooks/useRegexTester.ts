@@ -46,10 +46,16 @@ export function useRegexTester() {
   }, []);
 
   return {
-    pattern, setPattern,
-    flags, setFlags,
-    testString, setTestString,
-    matches, isValid, error, executionTime,
+    pattern,
+    setPattern,
+    flags,
+    setFlags,
+    testString,
+    setTestString,
+    matches,
+    isValid,
+    error,
+    executionTime,
     handleTemplateSelect,
   };
 }
@@ -59,10 +65,12 @@ function buildMatch(match: RegExpExecArray): RegexMatch {
   for (let i = 1; i < match.length; i++) {
     if (match[i] !== undefined) {
       groups.push({
-        name: match.groups ? Object.entries(match.groups).find(([, v]) => v === match[i])?.[0] ?? null : null,
+        name: match.groups
+          ? (Object.entries(match.groups).find(([, v]) => v === match[i])?.[0] ?? null)
+          : null,
         value: match[i],
-        start: match.index + (match[0].indexOf(match[i])),
-        end: match.index + (match[0].indexOf(match[i])) + match[i].length,
+        start: match.index + match[0].indexOf(match[i]),
+        end: match.index + match[0].indexOf(match[i]) + match[i].length,
       });
     }
   }

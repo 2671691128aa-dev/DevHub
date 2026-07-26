@@ -1,7 +1,6 @@
 import { cn } from '@/utils/cn';
 import { useChatStore } from '@/store/useChatStore';
 import { PROMPT_TEMPLATES } from '@/constants/prompt-templates';
-import { PROMPT_INSERT_EVENT } from '@/constants/defaults';
 import type { PromptTemplate } from '@/types/chat';
 
 const categoryLabels: Record<string, string> = {
@@ -10,15 +9,19 @@ const categoryLabels: Record<string, string> = {
   analysis: '分析',
 };
 
-export function PromptPanel() {
+export interface PromptPanelProps {
+  onInsert: (text: string) => void;
+}
+
+export function PromptPanel({ onInsert }: PromptPanelProps) {
   const isStreaming = useChatStore((s) => s.isStreaming);
 
   const handleSelect = (template: PromptTemplate) => {
-    window.dispatchEvent(new CustomEvent(PROMPT_INSERT_EVENT, { detail: template.prompt }));
+    onInsert(template.prompt);
   };
 
   return (
-    <div className="w-64 shrink-0 rounded-xl border border-border bg-bg-secondary p-4 overflow-y-auto">
+    <div className="w-64 shrink-0 overflow-y-auto rounded-xl border border-border bg-bg-secondary p-4">
       <h3 className="text-sm font-semibold text-text-primary">提示词模板</h3>
       <p className="mt-0.5 text-xs text-text-muted">点击快速填充</p>
 
@@ -36,11 +39,11 @@ export function PromptPanel() {
                   className={cn(
                     'w-full rounded-lg border border-border px-3 py-2 text-left transition-colors',
                     'hover:border-border-hover hover:bg-bg-tertiary',
-                    'disabled:opacity-50 disabled:pointer-events-none',
+                    'disabled:pointer-events-none disabled:opacity-50',
                   )}
                 >
                   <div className="text-sm font-medium text-text-primary">{t.name}</div>
-                  <div className="text-xs text-text-muted line-clamp-1">{t.description}</div>
+                  <div className="line-clamp-1 text-xs text-text-muted">{t.description}</div>
                 </button>
               ))}
             </div>

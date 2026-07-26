@@ -1,2 +1,2 @@
 export { tools } from './tools';
-export { categories } from './categories';
+export { categories, iconMap } from './categories';

@@ -1,5 +1,15 @@
 import { motion } from 'framer-motion';
-import { Github, Mail, ExternalLink } from 'lucide-react';
+import {
+  Github,
+  Mail,
+  ExternalLink,
+  Zap,
+  Shield,
+  Keyboard,
+  Palette,
+  Code2,
+  Cpu,
+} from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { EXTERNAL_LINKS } from '@/constants/api';
@@ -16,11 +26,43 @@ const techStack = [
   { name: 'Anthropic API', category: 'AI', color: 'blue' as const, desc: 'AI 集成' },
 ];
 
-const milestones = [
-  { date: '2026-07', title: '项目启动', desc: '确定产品方向和技术选型' },
-  { date: '2026-07', title: '基础架构', desc: '搭建脚手架、路由、设计系统' },
-  { date: '2026-07', title: '核心工具', desc: '完成 JSON、正则、AI 聊天、Markdown 四大工具' },
-  { date: '2026-07', title: 'MVP 发布', desc: '完成首页、工具中心、关于页面，部署上线' },
+const highlights = [
+  {
+    icon: Zap,
+    title: '极速加载',
+    desc: 'Route-level 代码分割 + Vite 手动分包，首屏加载 < 1s',
+    color: '#F59E0B',
+  },
+  {
+    icon: Shield,
+    title: '隐私安全',
+    desc: 'API Key 仅存本地浏览器，零后端服务，数据不经第三方',
+    color: '#10B981',
+  },
+  {
+    icon: Keyboard,
+    title: '键盘优先',
+    desc: 'Cmd+K 命令面板全局跳转，所有核心操作支持快捷键',
+    color: '#6366F1',
+  },
+  {
+    icon: Palette,
+    title: '设计系统',
+    desc: 'CSS 变量语义化 token，亮/暗双主题，一致的间距圆角动效',
+    color: '#EC4899',
+  },
+  {
+    icon: Code2,
+    title: '类型安全',
+    desc: 'TypeScript Strict 模式，零 any，所有 Props 集中导出',
+    color: '#3B82F6',
+  },
+  {
+    icon: Cpu,
+    title: 'Web Worker',
+    desc: '计算密集型任务放入 Worker，大 JSON 处理不卡主线程',
+    color: '#8B5CF6',
+  },
 ];
 
 export function AboutPage() {
@@ -34,7 +76,7 @@ export function AboutPage() {
         className="text-center"
       >
         <h1 className="text-3xl font-bold">关于 DevHub</h1>
-        <p className="mt-3 text-text-secondary max-w-lg mx-auto">
+        <p className="mx-auto mt-3 max-w-lg text-text-secondary">
           DevHub 是一个面向开发者的一站式 AI 效率工具平台，
           旨在将常用开发工具整合到一个统一、美观、智能的界面中。
         </p>
@@ -61,11 +103,11 @@ export function AboutPage() {
       {/* Tech Stack */}
       <section className="mt-16">
         <h2 className="text-xl font-semibold">技术栈</h2>
-        <div className="mt-4 grid gap-3 grid-cols-2 sm:grid-cols-3">
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {techStack.map((tech) => (
             <Card key={tech.name} hoverable className="!p-4">
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-sm text-text-primary">{tech.name}</span>
+                <span className="text-sm font-semibold text-text-primary">{tech.name}</span>
                 <Badge color={tech.color}>{tech.category}</Badge>
               </div>
               <p className="mt-1 text-xs text-text-muted">{tech.desc}</p>
@@ -74,29 +116,34 @@ export function AboutPage() {
         </div>
       </section>
 
-      {/* Timeline */}
+      {/* Project Highlights */}
       <section className="mt-16">
-        <h2 className="text-xl font-semibold">开发时间线</h2>
-        <div className="mt-6 space-y-0">
-          {milestones.map((m, i) => (
-            <div key={i} className="flex gap-4">
-              <div className="flex flex-col items-center">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-accent text-xs font-semibold">
-                  {i + 1}
-                </div>
-                {i < milestones.length - 1 && (
-                  <div className="w-px flex-1 bg-border my-1" />
-                )}
-              </div>
-              <div className="pb-8">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-accent font-medium">{m.date}</span>
-                  <h3 className="font-semibold text-text-primary">{m.title}</h3>
-                </div>
-                <p className="mt-0.5 text-sm text-text-secondary">{m.desc}</p>
-              </div>
-            </div>
-          ))}
+        <h2 className="text-xl font-semibold">项目亮点</h2>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          {highlights.map((item, i) => {
+            const Icon = item.icon;
+            return (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: i * 0.06 }}
+              >
+                <Card hoverable className="flex items-start gap-4 !p-4">
+                  <div
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
+                    style={{ backgroundColor: `${item.color}15`, color: item.color }}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-text-primary">{item.title}</h3>
+                    <p className="mt-1 text-sm text-text-secondary">{item.desc}</p>
+                  </div>
+                </Card>
+              </motion.div>
+            );
+          })}
         </div>
       </section>
 
@@ -105,7 +152,7 @@ export function AboutPage() {
         <h2 className="text-xl font-semibold">开发者</h2>
         <Card className="mt-4">
           <div className="flex items-start gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent/10 text-accent text-xl font-bold">
+            <div className="bg-accent/10 flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold text-accent">
               D
             </div>
             <div>
@@ -114,13 +161,24 @@ export function AboutPage() {
                 前端开发者，热爱构建高质量的用户界面和开发工具。
               </p>
               <div className="mt-3 flex gap-3">
-                <a href={EXTERNAL_LINKS.GITHUB} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary transition-colors">
+                <a
+                  href={EXTERNAL_LINKS.GITHUB}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-sm text-text-muted transition-colors hover:text-text-primary"
+                >
                   <Github className="h-4 w-4" /> GitHub
                 </a>
-                <a href={EXTERNAL_LINKS.DEV_EMAIL} className="flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary transition-colors">
+                <a
+                  href={EXTERNAL_LINKS.DEV_EMAIL}
+                  className="flex items-center gap-1.5 text-sm text-text-muted transition-colors hover:text-text-primary"
+                >
                   <Mail className="h-4 w-4" /> Email
                 </a>
-                <a href="#" className="flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary transition-colors">
+                <a
+                  href="#"
+                  className="flex items-center gap-1.5 text-sm text-text-muted transition-colors hover:text-text-primary"
+                >
                   <ExternalLink className="h-4 w-4" /> Portfolio
                 </a>
               </div>

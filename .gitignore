@@ -6,3 +6,5 @@ dist
 .env.local
 *.tsbuildinfo
 vite.config.d.ts
+
+.vercel

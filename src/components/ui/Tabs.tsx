@@ -15,15 +15,13 @@ function Tabs({ tabs, activeId, onChange, className }: TabsProps) {
           key={tab.id}
           onClick={() => onChange(tab.id)}
           className={cn(
-            'relative px-4 py-2.5 text-sm font-medium transition-colors outline-none',
-            activeId === tab.id
-              ? 'text-text-primary'
-              : 'text-text-muted hover:text-text-secondary',
+            'relative px-4 py-2.5 text-sm font-medium outline-none transition-colors',
+            activeId === tab.id ? 'text-text-primary' : 'text-text-muted hover:text-text-secondary',
           )}
         >
           {tab.label}
           {activeId === tab.id && (
-            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent rounded-full" />
+            <span className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-accent" />
           )}
         </button>
       ))}

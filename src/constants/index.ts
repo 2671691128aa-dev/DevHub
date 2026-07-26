@@ -20,6 +20,6 @@ export {
   MARKDOWN_EXPORT_TITLE,
   MARKDOWN_EXPORT_LANG,
   READING_WPM,
-  PROMPT_INSERT_EVENT,
 } from './defaults';
 export { EXPORT_THEME } from './theme';
+export { AI_ERROR_MESSAGES, RETRY_CONFIG } from './error-messages';

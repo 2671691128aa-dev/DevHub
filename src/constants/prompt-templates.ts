@@ -5,7 +5,8 @@ export const PROMPT_TEMPLATES: PromptTemplate[] = [
     id: 'code-review',
     name: '代码审查',
     description: '审查代码质量、性能和潜在问题',
-    prompt: '请帮我审查以下代码，关注代码质量、性能、可读性和潜在问题：\n\n```\n// 在这里粘贴代码\n```',
+    prompt:
+      '请帮我审查以下代码，关注代码质量、性能、可读性和潜在问题：\n\n```\n// 在这里粘贴代码\n```',
     category: 'coding',
   },
   {

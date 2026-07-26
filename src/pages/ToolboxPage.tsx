@@ -1,51 +1,67 @@
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Code2, Bot, FileText, Globe, Wrench } from 'lucide-react';
+import { Search, Wrench, Star } from 'lucide-react';
 import { Tabs } from '@/components/ui/Tabs';
 import { ToolCard } from '@/components/shared/ToolCard';
 import { SearchInput } from '@/components/shared/SearchInput';
-import { useToolStore } from '@/store/useToolStore';
-import { tools, categories } from '@/data';
+import { tools, categories, iconMap } from '@/data';
+import { useFavoriteStore } from '@/store/useFavoriteStore';
 import type { ToolCategory } from '@/types/tool';
-import type { LucideIcon } from 'lucide-react';
-import { Braces, Regex } from 'lucide-react';
-
-const iconMap: Record<string, LucideIcon> = {
-  Code2, Bot, FileText, Globe, Braces, Regex,
-};
 
 const filterTabs = [
   { id: 'all', label: '全部工具' },
+  { id: 'favorites', label: '收藏' },
   ...categories.map((c) => ({ id: c.id, label: c.name })),
 ];
 
 export function ToolboxPage() {
-  const searchQuery = useToolStore((s) => s.searchQuery);
-  const activeCategory = useToolStore((s) => s.activeCategory);
-  const setSearchQuery = useToolStore((s) => s.setSearchQuery);
-  const setActiveCategory = useToolStore((s) => s.setActiveCategory);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState<ToolCategory | 'all' | 'favorites'>('all');
+  const favoriteIds = useFavoriteStore((s) => s.favoriteIds);
 
   const filteredTools = useMemo(() => {
     return tools.filter((tool) => {
-      const matchCategory = activeCategory === 'all' || tool.category === activeCategory;
+      // Category filter
+      let matchCategory: boolean;
+      if (activeCategory === 'all') {
+        matchCategory = true;
+      } else if (activeCategory === 'favorites') {
+        matchCategory = favoriteIds.includes(tool.id);
+      } else {
+        matchCategory = tool.category === activeCategory;
+      }
+
+      // Search filter
       const query = searchQuery.toLowerCase();
       const matchSearch =
         !query ||
         tool.name.toLowerCase().includes(query) ||
         tool.description.toLowerCase().includes(query) ||
         tool.tags.some((t) => t.toLowerCase().includes(query));
+
       return matchCategory && matchSearch;
     });
-  }, [searchQuery, activeCategory]);
+  }, [searchQuery, activeCategory, favoriteIds]);
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-8">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-text-primary">工具中心</h1>
+          <h1 className="text-2xl font-semibold text-text-primary">
+            {activeCategory === 'favorites' ? (
+              <span className="flex items-center gap-2">
+                <Star className="h-5 w-5 text-yellow-400" />
+                我的收藏
+              </span>
+            ) : (
+              '工具中心'
+            )}
+          </h1>
           <p className="mt-1 text-sm text-text-muted">
-            共 {tools.length} 个工具
+            {activeCategory === 'favorites'
+              ? `共 ${filteredTools.length} 个收藏工具`
+              : `共 ${tools.length} 个工具`}
           </p>
         </div>
         <div className="w-full sm:w-64">
@@ -58,17 +74,14 @@ export function ToolboxPage() {
         <Tabs
           tabs={filterTabs}
           activeId={activeCategory}
-          onChange={(id) => setActiveCategory(id as ToolCategory | 'all')}
+          onChange={(id) => setActiveCategory(id as ToolCategory | 'all' | 'favorites')}
         />
       </div>
 
       {/* Tools Grid */}
       <div className="mt-8">
         {filteredTools.length > 0 ? (
-          <motion.div
-            layout
-            className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
-          >
+          <motion.div layout className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <AnimatePresence>
               {filteredTools.map((tool) => {
                 const Icon = iconMap[tool.icon] ?? Wrench;
@@ -89,10 +102,18 @@ export function ToolboxPage() {
           </motion.div>
         ) : (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <Wrench className="h-12 w-12 text-text-muted" />
-            <h3 className="mt-4 text-lg font-medium text-text-primary">没有找到工具</h3>
-            <p className="mt-1 text-sm text-text-muted">
-              试试其他关键词或切换分类
+            <div className="text-text-tertiary flex h-14 w-14 items-center justify-center rounded-2xl bg-bg-tertiary">
+              {activeCategory === 'favorites' ? (
+                <Star className="h-7 w-7" />
+              ) : (
+                <Search className="h-7 w-7" />
+              )}
+            </div>
+            <h3 className="mt-4 text-lg font-medium text-text-primary">
+              {activeCategory === 'favorites' ? '暂无收藏工具' : '没有找到匹配的工具'}
+            </h3>
+            <p className="text-text-tertiary mt-1 text-sm">
+              {activeCategory === 'favorites' ? '浏览工具时点击星标即可收藏' : '试试其他关键词'}
             </p>
           </div>
         )}

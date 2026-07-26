@@ -17,7 +17,7 @@ export const MarkdownEditorPanel = forwardRef<HTMLTextAreaElement, MarkdownEdito
         onChange={(e) => onChange(e.target.value)}
         spellCheck={false}
         className={cn(
-          'flex-1 resize-none bg-transparent p-4 font-mono text-sm text-text-primary outline-none leading-relaxed placeholder:text-text-muted',
+          'flex-1 resize-none bg-transparent p-4 font-mono text-sm leading-relaxed text-text-primary outline-none placeholder:text-text-muted',
           className,
         )}
         placeholder="开始编写 Markdown..."

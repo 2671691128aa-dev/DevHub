@@ -72,3 +72,12 @@ export interface JsonWorkerResponse {
 // --- JSON Formatter view ---
 
 export type JsonViewMode = 'code' | 'tree' | 'split';
+
+// --- JSON Formatter worker result ---
+
+export interface JsonWorkerResult {
+  output: string;
+  tree: TreeNode | null;
+  validation: { valid: true } | { valid: false; error: JsonError };
+  stats: JsonStats;
+}

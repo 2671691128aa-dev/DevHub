@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { CheckCircle, XCircle } from 'lucide-react';
 import type { JsonError, JsonStats } from '@/types/common';
 
@@ -7,7 +8,11 @@ export interface ValidationStatusProps {
   stats: JsonStats;
 }
 
-export function ValidationStatus({ isValid, error, stats }: ValidationStatusProps) {
+export const ValidationStatus = memo(function ValidationStatus({
+  isValid,
+  error,
+  stats,
+}: ValidationStatusProps) {
   return (
     <div className="flex items-center justify-between border-t border-border px-4 py-2 text-sm">
       <div className="flex items-center gap-2">
@@ -31,4 +36,4 @@ export function ValidationStatus({ isValid, error, stats }: ValidationStatusProp
       </div>
     </div>
   );
-}
+});

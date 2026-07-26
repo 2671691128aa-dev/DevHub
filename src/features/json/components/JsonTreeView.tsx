@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useState, memo, type ReactNode } from 'react';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import type { TreeNode } from '@/types/common';
 
@@ -6,15 +6,21 @@ export interface JsonTreeViewProps {
   tree: TreeNode;
 }
 
-export function JsonTreeView({ tree }: JsonTreeViewProps) {
+export const JsonTreeView = memo(function JsonTreeView({ tree }: JsonTreeViewProps) {
   return (
     <div className="h-full overflow-auto rounded-lg border border-border bg-bg-tertiary p-3 font-mono text-sm">
       <TreeNodeComponent node={tree} depth={0} />
     </div>
   );
-}
+});
 
-function TreeNodeComponent({ node, depth }: { node: TreeNode; depth: number }): ReactNode {
+const TreeNodeComponent = memo(function TreeNodeComponent({
+  node,
+  depth,
+}: {
+  node: TreeNode;
+  depth: number;
+}): ReactNode {
   const [collapsed, setCollapsed] = useState(depth > 2);
 
   const hasChildren = node.children && node.children.length > 0;
@@ -46,19 +52,19 @@ function TreeNodeComponent({ node, depth }: { node: TreeNode; depth: number }): 
   return (
     <div>
       <div
-        className="flex cursor-pointer items-center gap-1 leading-7 hover:bg-bg-secondary rounded"
+        className="flex cursor-pointer items-center gap-1 rounded leading-7 hover:bg-bg-secondary"
         style={{ paddingLeft: indent }}
         onClick={() => setCollapsed(!collapsed)}
       >
         {collapsed ? (
-          <ChevronRight className="h-4 w-4 text-text-muted shrink-0" />
+          <ChevronRight className="h-4 w-4 shrink-0 text-text-muted" />
         ) : (
-          <ChevronDown className="h-4 w-4 text-text-muted shrink-0" />
+          <ChevronDown className="h-4 w-4 shrink-0 text-text-muted" />
         )}
         <span className="text-text-secondary">{node.key}</span>
         <span className="text-text-muted">{bracket[0]}</span>
         {collapsed && (
-          <span className="text-text-muted text-xs ml-1">
+          <span className="ml-1 text-xs text-text-muted">
             {childCount} items… {bracket[1]}
           </span>
         )}
@@ -75,4 +81,4 @@ function TreeNodeComponent({ node, depth }: { node: TreeNode; depth: number }): 
       )}
     </div>
   );
-}
+});

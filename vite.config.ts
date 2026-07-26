@@ -9,4 +9,19 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    target: 'es2020',
+    sourcemap: false,
+    cssCodeSplit: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-markdown': ['react-markdown', 'remark-gfm'],
+          'vendor-motion': ['framer-motion'],
+          'vendor-state': ['zustand'],
+        },
+      },
+    },
+  },
 });

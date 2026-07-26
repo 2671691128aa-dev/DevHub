@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Search, Github, Terminal, Menu, X, Sun, Moon } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useAppStore } from '@/store/useAppStore';
+import { useUserStore } from '@/store/useUserStore';
 import { ROUTES, EXTERNAL_LINKS } from '@/constants';
 
 const navLinks = [
@@ -16,6 +17,8 @@ export function Navbar() {
   const openCommandPalette = useAppStore((s) => s.openCommandPalette);
   const theme = useAppStore((s) => s.theme);
   const toggleTheme = useAppStore((s) => s.toggleTheme);
+  const avatar = useUserStore((s) => s.profile.avatar);
+  const avatarType = useUserStore((s) => s.profile.avatarType);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const lastScrollY = useRef(0);
@@ -59,7 +62,7 @@ export function Navbar() {
         </Link>
 
         {/* Nav Links - desktop */}
-        <div className="hidden sm:flex items-center gap-1">
+        <div className="hidden items-center gap-1 sm:flex">
           {navLinks.map((link) => (
             <Link
               key={link.path}
@@ -67,8 +70,8 @@ export function Navbar() {
               className={cn(
                 'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
                 location.pathname === link.path
-                  ? 'text-text-primary bg-bg-tertiary'
-                  : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary',
+                  ? 'bg-bg-tertiary text-text-primary'
+                  : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary',
               )}
             >
               {link.label}
@@ -84,7 +87,7 @@ export function Navbar() {
           >
             <Search className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">搜索</span>
-            <kbd className="hidden sm:inline-flex h-5 items-center rounded border border-border bg-bg-tertiary px-1.5 text-[10px] font-medium text-text-muted">
+            <kbd className="hidden h-5 items-center rounded border border-border bg-bg-tertiary px-1.5 text-[10px] font-medium text-text-muted sm:inline-flex">
               ⌘K
             </kbd>
           </button>
@@ -95,18 +98,29 @@ export function Navbar() {
           >
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
+          <Link
+            to={ROUTES.PROFILE}
+            className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-md text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
+            title="用户中心"
+          >
+            {avatarType === 'url' ? (
+              <img src={avatar} alt="avatar" className="h-full w-full rounded-md object-cover" />
+            ) : (
+              <span className="text-sm">{avatar}</span>
+            )}
+          </Link>
           <a
             href={EXTERNAL_LINKS.GITHUB}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
+            className="hidden h-8 w-8 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary sm:flex"
           >
             <Github className="h-4 w-4" />
           </a>
           {/* Mobile menu toggle */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="sm:hidden flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
+            className="flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary sm:hidden"
           >
             {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
@@ -115,7 +129,7 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="sm:hidden border-t border-border bg-bg-primary px-6 py-3 space-y-1">
+        <div className="space-y-1 border-t border-border bg-bg-primary px-6 py-3 sm:hidden">
           {navLinks.map((link) => (
             <Link
               key={link.path}
@@ -124,8 +138,8 @@ export function Navbar() {
               className={cn(
                 'block rounded-md px-3 py-2 text-sm font-medium transition-colors',
                 location.pathname === link.path
-                  ? 'text-text-primary bg-bg-tertiary'
-                  : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary',
+                  ? 'bg-bg-tertiary text-text-primary'
+                  : 'text-text-secondary hover:bg-bg-secondary hover:text-text-primary',
               )}
             >
               {link.label}

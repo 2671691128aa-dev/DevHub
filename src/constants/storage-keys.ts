@@ -7,6 +7,10 @@ export const STORAGE_KEYS = {
   THEME: 'devhub-theme',
   /** IndexedDB (via Zustand persist): chat conversations + settings */
   CHAT: 'devhub-chat',
-  /** IndexedDB: markdown editor content */
-  MARKDOWN_CONTENT: 'devhub-markdown-content',
+  /** localStorage: favorite tool IDs */
+  FAVORITES: 'devhub-favorites',
+  /** IndexedDB (via Zustand persist): tool usage history */
+  HISTORY: 'devhub-history',
+  /** IndexedDB (via Zustand persist): user profile */
+  USER: 'devhub-user',
 } as const;

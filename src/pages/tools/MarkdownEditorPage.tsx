@@ -1,12 +1,11 @@
 import { FileText, Download, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Tabs } from '@/components/ui/Tabs';
-import { Breadcrumb } from '@/components/layout/Breadcrumb';
+import { ToolPageHeader } from '@/components/shared/ToolPageHeader';
 import { FormattingToolbar } from '@/features/markdown/components/FormattingToolbar';
 import { MarkdownEditorPanel } from '@/features/markdown/components/MarkdownEditor';
 import { MarkdownPreview } from '@/features/markdown/components/MarkdownPreview';
 import { useMarkdownEditor } from '@/features/markdown/hooks/useMarkdownEditor';
-import { ROUTES } from '@/constants/routes';
 
 const viewTabs = [
   { id: 'split', label: '分栏' },
@@ -16,50 +15,65 @@ const viewTabs = [
 
 export function MarkdownEditorPage() {
   const {
-    content, handleContentChange, viewMode, setViewMode,
-    textareaRef, stats, insertFormatting, handleExportHtml, handleCopyHtml,
+    content,
+    handleContentChange,
+    viewMode,
+    setViewMode,
+    textareaRef,
+    stats,
+    insertFormatting,
+    handleExportHtml,
+    handleCopyHtml,
   } = useMarkdownEditor();
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-6">
-      <Breadcrumb items={[
-        { label: '工具', path: ROUTES.TOOLS },
-        { label: 'Markdown 编辑器' },
-      ]} />
-
-      <div className="mt-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10 text-accent">
-            <FileText className="h-5 w-5" />
-          </div>
-          <h1 className="text-xl font-semibold">Markdown 编辑器</h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={handleCopyHtml}>
-            <Copy className="h-3.5 w-3.5" /> 复制 HTML
-          </Button>
-          <Button variant="secondary" size="sm" onClick={handleExportHtml}>
-            <Download className="h-3.5 w-3.5" /> 导出
-          </Button>
-        </div>
-      </div>
+      <ToolPageHeader
+        icon={FileText}
+        title="Markdown 编辑器"
+        actions={
+          <>
+            <Button variant="ghost" size="sm" onClick={handleCopyHtml}>
+              <Copy className="h-3.5 w-3.5" /> 复制 HTML
+            </Button>
+            <Button variant="secondary" size="sm" onClick={handleExportHtml}>
+              <Download className="h-3.5 w-3.5" /> 导出
+            </Button>
+          </>
+        }
+      />
 
       {/* View mode + Toolbar */}
       <div className="mt-4">
-        <Tabs tabs={viewTabs} activeId={viewMode} onChange={(id) => setViewMode(id as 'split' | 'editor' | 'preview')} />
+        <Tabs
+          tabs={viewTabs}
+          activeId={viewMode}
+          onChange={(id) => setViewMode(id as 'split' | 'editor' | 'preview')}
+        />
       </div>
 
-      <div className="mt-4 rounded-xl border border-border bg-bg-secondary overflow-hidden" style={{ height: 'calc(100vh - 280px)', minHeight: 400 }}>
+      <div
+        className="mt-4 overflow-hidden rounded-xl border border-border bg-bg-secondary"
+        style={{ height: 'calc(100vh - 280px)', minHeight: 400 }}
+      >
         <FormattingToolbar onInsert={insertFormatting} />
 
         <div className="flex h-[calc(100%-41px)] flex-col md:flex-row">
           {(viewMode === 'split' || viewMode === 'editor') && (
-            <div className={`flex flex-col ${viewMode === 'split' ? 'md:w-1/2 w-full md:border-r border-border border-b md:border-b-0' : 'w-full'}`}>
-              <MarkdownEditorPanel value={content} onChange={handleContentChange} textareaRef={textareaRef} />
+            <div
+              className={`flex flex-col ${viewMode === 'split' ? 'w-full border-b border-border md:w-1/2 md:border-b-0 md:border-r' : 'w-full'}`}
+            >
+              <MarkdownEditorPanel
+                value={content}
+                onChange={handleContentChange}
+                textareaRef={textareaRef}
+              />
             </div>
           )}
           {(viewMode === 'split' || viewMode === 'preview') && (
-            <div className={`flex flex-col overflow-auto ${viewMode === 'split' ? 'md:w-1/2 w-full' : 'w-full'}`}>
+            <div
+              className={`flex flex-col overflow-auto ${viewMode === 'split' ? 'w-full md:w-1/2' : 'w-full'}`}
+            >
               <MarkdownPreview content={content} />
             </div>
           )}

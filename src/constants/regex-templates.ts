@@ -11,7 +11,7 @@ export const REGEX_TEMPLATES: RegexTemplate[] = [
   {
     id: 'url',
     name: 'URL 链接',
-    pattern: 'https?:\\/\\/[\\w\\-._~:/?#\\[\\]@!$&\'()*+,;=%]+',
+    pattern: "https?:\\/\\/[\\w\\-._~:/?#\\[\\]@!$&'()*+,;=%]+",
     description: '匹配 HTTP/HTTPS URL',
     example: 'https://www.example.com/path?q=test',
   },

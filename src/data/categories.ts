@@ -1,3 +1,5 @@
+import { Code2, Bot, FileText, Globe, Braces, Regex, Binary, ScanSearch } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import type { ToolCategoryConfig } from '@/types/tool';
 
 export const categories: ToolCategoryConfig[] = [
@@ -30,3 +32,14 @@ export const categories: ToolCategoryConfig[] = [
     description: 'HTTP 测试、URL 编解码、Header 分析',
   },
 ];
+
+export const iconMap: Record<string, LucideIcon> = {
+  Code2,
+  Bot,
+  FileText,
+  Globe,
+  Braces,
+  Regex,
+  Binary,
+  ScanSearch,
+};

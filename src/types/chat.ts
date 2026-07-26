@@ -1,9 +1,15 @@
+import type { AIErrorCode } from './error';
+
 export interface Message {
   id: string;
   role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: number;
   status?: 'pending' | 'sent' | 'failed';
+  /** 错误描述文本，用于 UI 展示 */
+  errorMessage?: string;
+  /** 结构化错误码，用于决定重试策略 */
+  errorCode?: AIErrorCode;
 }
 
 export interface Conversation {

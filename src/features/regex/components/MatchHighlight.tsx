@@ -6,7 +6,12 @@ export interface MatchHighlightProps {
   matches: RegexMatch[];
 }
 
-const matchColors = ['bg-blue-500/20 border-blue-500/40', 'bg-purple-500/20 border-purple-500/40', 'bg-green-500/20 border-green-500/40', 'bg-yellow-500/20 border-yellow-500/40'];
+const matchColors = [
+  'bg-blue-500/20 border-blue-500/40',
+  'bg-purple-500/20 border-purple-500/40',
+  'bg-green-500/20 border-green-500/40',
+  'bg-yellow-500/20 border-yellow-500/40',
+];
 
 export function MatchHighlight({ text, matches }: MatchHighlightProps) {
   const segments = useMemo(() => {
@@ -34,7 +39,7 @@ export function MatchHighlight({ text, matches }: MatchHighlightProps) {
   }, [text, matches]);
 
   return (
-    <div className="whitespace-pre-wrap break-all font-mono text-sm leading-7 text-text-primary p-3">
+    <div className="whitespace-pre-wrap break-all p-3 font-mono text-sm leading-7 text-text-primary">
       {segments.map((seg, i): ReactNode =>
         seg.highlight ? (
           <mark key={i} className={`rounded border ${matchColors[seg.colorIdx]} px-0.5`}>

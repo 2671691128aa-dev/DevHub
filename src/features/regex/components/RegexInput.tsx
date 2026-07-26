@@ -16,7 +16,13 @@ const flagOptions = [
   { flag: 's', label: 'Dotall' },
 ];
 
-export function RegexInput({ pattern, onPatternChange, flags, onFlagsChange, isValid }: RegexInputProps) {
+export function RegexInput({
+  pattern,
+  onPatternChange,
+  flags,
+  onFlagsChange,
+  isValid,
+}: RegexInputProps) {
   const toggleFlag = (flag: string) => {
     onFlagsChange(flags.includes(flag) ? flags.replace(flag, '') : flags + flag);
   };
@@ -24,7 +30,7 @@ export function RegexInput({ pattern, onPatternChange, flags, onFlagsChange, isV
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-2">
-        <span className="text-text-muted font-mono text-sm">/</span>
+        <span className="font-mono text-sm text-text-muted">/</span>
         <div className="flex-1">
           <Input
             value={pattern}
@@ -33,7 +39,7 @@ export function RegexInput({ pattern, onPatternChange, flags, onFlagsChange, isV
             className={cn('font-mono', !isValid && 'border-error')}
           />
         </div>
-        <span className="text-text-muted font-mono text-sm">/{flags}</span>
+        <span className="font-mono text-sm text-text-muted">/{flags}</span>
       </div>
       <div className="flex items-center gap-2">
         {flagOptions.map((opt) => (
@@ -43,8 +49,8 @@ export function RegexInput({ pattern, onPatternChange, flags, onFlagsChange, isV
             className={cn(
               'flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium transition-colors',
               flags.includes(opt.flag)
-                ? 'border-accent bg-accent/10 text-accent'
-                : 'border-border text-text-muted hover:text-text-secondary hover:border-border-hover',
+                ? 'bg-accent/10 border-accent text-accent'
+                : 'border-border text-text-muted hover:border-border-hover hover:text-text-secondary',
             )}
             title={opt.label}
           >
