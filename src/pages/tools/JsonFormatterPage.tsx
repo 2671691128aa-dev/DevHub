@@ -7,6 +7,7 @@ import { JsonEditor } from '@/features/json/components/JsonEditor';
 import { JsonTreeView } from '@/features/json/components/JsonTreeView';
 import { ValidationStatus } from '@/features/json/components/ValidationStatus';
 import { useJsonFormatter } from '@/features/json/hooks/useJsonFormatter';
+import GradientText from '@/components/GradientText';
 
 const viewTabs = [
   { id: 'code', label: '代码' },
@@ -37,6 +38,15 @@ export function JsonFormatterPage() {
       <ToolPageHeader
         icon={Braces}
         title="JSON 格式化"
+        titleNode={
+          <GradientText
+            colors={['var(--text-primary)', 'var(--accent)', 'var(--text-primary)']}
+            animationSpeed={8}
+            className="text-xl font-semibold"
+          >
+            JSON 格式化
+          </GradientText>
+        }
         subtitle={
           isProcessing ? (
             <span className="flex items-center gap-1.5 text-xs text-text-muted">

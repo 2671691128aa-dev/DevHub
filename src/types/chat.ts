@@ -10,6 +10,19 @@ export interface Message {
   errorMessage?: string;
   /** 结构化错误码，用于决定重试策略 */
   errorCode?: AIErrorCode;
+  /** Agent 工具调用步骤 */
+  toolCalls?: ToolCallDisplay[];
+}
+
+export interface ToolCallDisplay {
+  id: string;
+  toolId: string;
+  toolName: string;
+  params: Record<string, unknown>;
+  result?: string;
+  status: 'pending' | 'running' | 'done' | 'error';
+  startTime: number;
+  endTime?: number;
 }
 
 export interface Conversation {

@@ -2,6 +2,7 @@ import { FileText, Download, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Tabs } from '@/components/ui/Tabs';
 import { ToolPageHeader } from '@/components/shared/ToolPageHeader';
+import GradientText from '@/components/GradientText';
 import { FormattingToolbar } from '@/features/markdown/components/FormattingToolbar';
 import { MarkdownEditorPanel } from '@/features/markdown/components/MarkdownEditor';
 import { MarkdownPreview } from '@/features/markdown/components/MarkdownPreview';
@@ -31,6 +32,15 @@ export function MarkdownEditorPage() {
       <ToolPageHeader
         icon={FileText}
         title="Markdown 编辑器"
+        titleNode={
+          <GradientText
+            colors={['var(--text-primary)', 'var(--accent)', 'var(--text-primary)']}
+            animationSpeed={8}
+            className="text-xl font-semibold"
+          >
+            Markdown 编辑器
+          </GradientText>
+        }
         actions={
           <>
             <Button variant="ghost" size="sm" onClick={handleCopyHtml}>

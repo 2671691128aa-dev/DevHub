@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Github, Terminal, Menu, X, Sun, Moon } from 'lucide-react';
+import { Search, Github, Terminal, Menu, X, Sun, Moon, LogIn } from 'lucide-react';
+import { SignInButton, UserButton } from '@clerk/react';
 import { cn } from '@/utils/cn';
 import { useAppStore } from '@/store/useAppStore';
 import { useUserStore } from '@/store/useUserStore';
+import { useAuth } from '@/hooks/useAuth';
 import { ROUTES, EXTERNAL_LINKS } from '@/constants';
 
 const navLinks = [
@@ -19,6 +21,7 @@ export function Navbar() {
   const toggleTheme = useAppStore((s) => s.toggleTheme);
   const avatar = useUserStore((s) => s.profile.avatar);
   const avatarType = useUserStore((s) => s.profile.avatarType);
+  const { isLoaded, isSignedIn } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const lastScrollY = useRef(0);
@@ -98,17 +101,37 @@ export function Navbar() {
           >
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
-          <Link
-            to={ROUTES.PROFILE}
-            className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-md text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
-            title="用户中心"
-          >
-            {avatarType === 'url' ? (
-              <img src={avatar} alt="avatar" className="h-full w-full rounded-md object-cover" />
-            ) : (
-              <span className="text-sm">{avatar}</span>
-            )}
-          </Link>
+          {isLoaded && isSignedIn ? (
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: 'h-7 w-7 rounded-md',
+                },
+              }}
+            />
+          ) : isLoaded && !isSignedIn ? (
+            <SignInButton mode="modal">
+              <button
+                className="flex h-8 items-center gap-1.5 rounded-md px-2.5 text-sm text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
+                title="登录"
+              >
+                <LogIn className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">登录</span>
+              </button>
+            </SignInButton>
+          ) : (
+            <Link
+              to={ROUTES.PROFILE}
+              className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-md text-text-secondary transition-colors hover:bg-bg-tertiary hover:text-text-primary"
+              title="用户中心"
+            >
+              {avatarType === 'url' ? (
+                <img src={avatar} alt="avatar" className="h-full w-full rounded-md object-cover" />
+              ) : (
+                <span className="text-sm">{avatar}</span>
+              )}
+            </Link>
+          )}
           <a
             href={EXTERNAL_LINKS.GITHUB}
             target="_blank"

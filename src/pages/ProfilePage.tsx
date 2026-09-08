@@ -9,6 +9,7 @@ import { FavoriteManager } from '@/components/profile/FavoriteManager';
 import { HistoryManager } from '@/components/profile/HistoryManager';
 import { useUserStore } from '@/store/useUserStore';
 import { RotateCcw } from 'lucide-react';
+import DecryptedText from '@/components/DecryptedText';
 
 export function ProfilePage() {
   const resetProfile = useUserStore((s) => s.resetProfile);
@@ -25,7 +26,17 @@ export function ProfilePage() {
         transition={{ duration: 0.3 }}
         className="mb-8 mt-4"
       >
-        <h1 className="text-2xl font-semibold text-text-primary">用户中心</h1>
+        <h1 className="text-2xl font-semibold text-text-primary">
+          <DecryptedText
+            text="用户中心"
+            animateOn="view"
+            speed={60}
+            maxIterations={8}
+            sequential
+            className="text-text-primary"
+            encryptedClassName="text-accent"
+          />
+        </h1>
         <p className="mt-1 text-sm text-text-muted">管理个人信息和使用数据</p>
       </motion.div>
 

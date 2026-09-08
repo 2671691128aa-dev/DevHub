@@ -2,6 +2,7 @@ import { Copy, Trash2, Binary, ArrowLeftRight, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/Button';
 import { Tabs } from '@/components/ui/Tabs';
 import { ToolPageHeader } from '@/components/shared/ToolPageHeader';
+import DecryptedText from '@/components/DecryptedText';
 import { useBase64 } from '@/features/base64/hooks/useBase64';
 
 const modeTabs = [
@@ -28,6 +29,17 @@ export function Base64Page() {
       <ToolPageHeader
         icon={Binary}
         title="Base64 编解码"
+        titleNode={
+          <DecryptedText
+            text="Base64 编解码"
+            animateOn="view"
+            speed={50}
+            maxIterations={10}
+            sequential
+            className="text-xl font-semibold text-text-primary"
+            encryptedClassName="text-accent"
+          />
+        }
         actions={
           <>
             <Button variant="ghost" size="sm" onClick={handleSwap} disabled={!input && !output}>

@@ -13,6 +13,8 @@ interface ToolPageHeaderProps {
   actions?: ReactNode;
   /** Extra content below the title (e.g. processing indicator) */
   subtitle?: ReactNode;
+  /** Optional custom title element (overrides the default h1 text) */
+  titleNode?: ReactNode;
 }
 
 /**
@@ -26,6 +28,7 @@ export function ToolPageHeader({
   breadcrumbLabel,
   actions,
   subtitle,
+  titleNode,
 }: ToolPageHeaderProps) {
   return (
     <>
@@ -39,7 +42,7 @@ export function ToolPageHeader({
             <Icon className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-xl font-semibold">{title}</h1>
+            {titleNode ?? <h1 className="text-xl font-semibold">{title}</h1>}
             {description && <p className="text-sm text-text-muted">{description}</p>}
             {subtitle}
           </div>

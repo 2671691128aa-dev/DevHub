@@ -7,12 +7,14 @@ import { CodeInput } from '@/features/code-review/components/CodeInput';
 import { LanguageSelector } from '@/features/code-review/components/LanguageSelector';
 import { ReviewResult } from '@/features/code-review/components/ReviewResult';
 import { useCodeReview } from '@/features/code-review/hooks/useCodeReview';
+import ClickSpark from '@/components/ClickSpark';
 
 export function CodeReviewPage() {
   const { code, setCode, language, setLanguage, result, isAnalyzing, analyze, reset, stats } =
     useCodeReview();
 
   return (
+    <ClickSpark sparkColor="var(--accent)" sparkCount={5} sparkRadius={15} sparkSize={6}>
     <div className="mx-auto max-w-7xl px-6 py-8">
       {/* Breadcrumb + Header */}
       <motion.div
@@ -113,5 +115,6 @@ export function CodeReviewPage() {
         </motion.div>
       )}
     </div>
+    </ClickSpark>
   );
 }

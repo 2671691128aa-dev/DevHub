@@ -13,6 +13,8 @@ import {
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { EXTERNAL_LINKS } from '@/constants/api';
+import Aurora from '@/components/Aurora';
+import StarBorder from '@/components/StarBorder';
 
 const techStack = [
   { name: 'React 18', category: '框架', color: 'blue' as const, desc: 'UI 框架' },
@@ -73,13 +75,23 @@ export function AboutPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="text-center"
+        className="relative overflow-hidden rounded-2xl text-center py-10 px-6"
       >
-        <h1 className="text-3xl font-bold">关于 DevHub</h1>
-        <p className="mx-auto mt-3 max-w-lg text-text-secondary">
-          DevHub 是一个面向开发者的一站式 AI 效率工具平台，
-          旨在将常用开发工具整合到一个统一、美观、智能的界面中。
-        </p>
+        <div className="absolute inset-0 opacity-30 dark:opacity-20">
+          <Aurora
+            colorStops={['#6366f1', '#8b5cf6', '#a78bfa']}
+            blend={0.7}
+            amplitude={1.2}
+            speed={0.3}
+          />
+        </div>
+        <div className="relative z-10">
+          <h1 className="text-3xl font-bold">关于 DevHub</h1>
+          <p className="mx-auto mt-3 max-w-lg text-text-secondary">
+            DevHub 是一个面向开发者的一站式 AI 效率工具平台，
+            旨在将常用开发工具整合到一个统一、美观、智能的界面中。
+          </p>
+        </div>
       </motion.div>
 
       {/* Design Principles */}
@@ -150,41 +162,45 @@ export function AboutPage() {
       {/* Developer */}
       <section className="mt-16">
         <h2 className="text-xl font-semibold">开发者</h2>
-        <Card className="mt-4">
-          <div className="flex items-start gap-4">
-            <div className="bg-accent/10 flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold text-accent">
-              D
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-text-primary">DevHub Developer</h3>
-              <p className="mt-1 text-sm text-text-secondary">
-                前端开发者，热爱构建高质量的用户界面和开发工具。
-              </p>
-              <div className="mt-3 flex gap-3">
-                <a
-                  href={EXTERNAL_LINKS.GITHUB}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-sm text-text-muted transition-colors hover:text-text-primary"
-                >
-                  <Github className="h-4 w-4" /> GitHub
-                </a>
-                <a
-                  href={EXTERNAL_LINKS.DEV_EMAIL}
-                  className="flex items-center gap-1.5 text-sm text-text-muted transition-colors hover:text-text-primary"
-                >
-                  <Mail className="h-4 w-4" /> Email
-                </a>
-                <a
-                  href="#"
-                  className="flex items-center gap-1.5 text-sm text-text-muted transition-colors hover:text-text-primary"
-                >
-                  <ExternalLink className="h-4 w-4" /> Portfolio
-                </a>
+        <div className="mt-4">
+          <StarBorder as="div" color="var(--accent)" speed="6s" thickness={2} className="w-full">
+            <div className="p-6">
+              <div className="flex items-start gap-4">
+                <div className="bg-accent/10 flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold text-accent">
+                  D
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-text-primary">DevHub Developer</h3>
+                  <p className="mt-1 text-sm text-text-secondary">
+                    前端开发者，热爱构建高质量的用户界面和开发工具。
+                  </p>
+                  <div className="mt-3 flex gap-3">
+                    <a
+                      href={EXTERNAL_LINKS.GITHUB}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-sm text-text-muted transition-colors hover:text-text-primary"
+                    >
+                      <Github className="h-4 w-4" /> GitHub
+                    </a>
+                    <a
+                      href={EXTERNAL_LINKS.DEV_EMAIL}
+                      className="flex items-center gap-1.5 text-sm text-text-muted transition-colors hover:text-text-primary"
+                    >
+                      <Mail className="h-4 w-4" /> Email
+                    </a>
+                    <a
+                      href="#"
+                      className="flex items-center gap-1.5 text-sm text-text-muted transition-colors hover:text-text-primary"
+                    >
+                      <ExternalLink className="h-4 w-4" /> Portfolio
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </Card>
+          </StarBorder>
+        </div>
       </section>
     </div>
   );

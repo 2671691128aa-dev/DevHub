@@ -4,13 +4,17 @@ import { Bot, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { ErrorFallback } from '@/components/shared/ErrorFallback';
 import { ToolPageHeader } from '@/components/shared/ToolPageHeader';
+import DecryptedText from '@/components/DecryptedText';
 import { ChatContainer } from '@/features/ai-chat/components/ChatContainer';
 import { PromptPanel } from '@/features/ai-chat/components/PromptPanel';
 import { ConversationList } from '@/features/ai-chat/components/ConversationList';
 import { SettingsPanel } from '@/features/ai-chat/components/SettingsPanel';
 import { useAppStore } from '@/store/useAppStore';
+import { useChatSync } from '@/hooks/useChatSync';
 
 export function AiChatPage() {
+  // Sync Zustand store with Supabase when logged in
+  useChatSync();
   const setSettingsOpen = useAppStore((s) => s.setSettingsOpen);
   const [pendingPromptText, setPendingPromptText] = useState<string | null>(null);
 
@@ -32,6 +36,17 @@ export function AiChatPage() {
         <ToolPageHeader
           icon={Bot}
           title="AI 聊天助手"
+          titleNode={
+            <DecryptedText
+              text="AI 聊天助手"
+              animateOn="view"
+              speed={50}
+              maxIterations={10}
+              sequential
+              className="text-xl font-semibold text-text-primary"
+              encryptedClassName="text-accent"
+            />
+          }
           actions={
             <Button variant="secondary" size="sm" onClick={() => setSettingsOpen(true)}>
               <Settings className="h-3.5 w-3.5" />

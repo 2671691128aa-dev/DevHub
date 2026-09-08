@@ -69,14 +69,18 @@ export function SettingsPanel() {
 
         {/* API Key */}
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-text-secondary">API Key</label>
+          <label className="mb-1.5 block text-sm font-medium text-text-secondary">
+            API Key（可选）
+          </label>
           <Input
             type="password"
             value={settings.apiKey}
             onChange={(e) => updateSettings({ apiKey: e.target.value })}
             placeholder={currentProvider.keyPlaceholder}
           />
-          <p className="mt-1 text-xs text-text-muted">密钥仅存储在本地浏览器中</p>
+          <p className="mt-1 text-xs text-text-muted">
+            已登录用户的 API Key 由服务端管理，无需在此填写。未登录时可在此输入本地使用。
+          </p>
         </div>
 
         {/* Model */}

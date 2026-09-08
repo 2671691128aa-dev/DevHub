@@ -10,6 +10,9 @@ import { WelcomeCard } from '@/components/dashboard/WelcomeCard';
 import { StatsGrid } from '@/components/dashboard/StatsGrid';
 import { RecentTools } from '@/components/dashboard/RecentTools';
 import { QuickActions } from '@/components/dashboard/QuickActions';
+import GradientText from '@/components/GradientText';
+import SpotlightCard from '@/components/SpotlightCard';
+import AnimatedContent from '@/components/AnimatedContent';
 import type { LucideIcon } from 'lucide-react';
 
 const categoryIcons: Record<string, LucideIcon> = {
@@ -39,7 +42,13 @@ export function HomePage() {
         {/* 核心工具 — 视觉主体 */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-text-primary">核心工具</h2>
+            <GradientText
+              colors={['var(--text-primary)', 'var(--accent)', 'var(--text-primary)']}
+              animationSpeed={8}
+              className="text-lg font-semibold"
+            >
+              核心工具
+            </GradientText>
             <p className="mt-0.5 text-sm text-text-muted">最受欢迎的开发工具</p>
           </div>
           <Link to={ROUTES.TOOLS}>
@@ -59,7 +68,9 @@ export function HomePage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.05 * i }}
               >
-                <ToolCard tool={tool} icon={Icon} />
+                <SpotlightCard>
+                  <ToolCard tool={tool} icon={Icon} />
+                </SpotlightCard>
               </motion.div>
             );
           })}
@@ -73,6 +84,7 @@ export function HomePage() {
       </div>
 
       {/* Categories */}
+      <AnimatedContent distance={60} duration={0.6}>
       <motion.section
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -80,7 +92,13 @@ export function HomePage() {
       >
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-text-primary">工具分类</h2>
+            <GradientText
+              colors={['var(--text-primary)', 'var(--accent)', 'var(--text-primary)']}
+              animationSpeed={8}
+              className="text-lg font-semibold"
+            >
+              工具分类
+            </GradientText>
             <p className="mt-0.5 text-sm text-text-muted">按类别浏览开发工具</p>
           </div>
           <Link to={ROUTES.TOOLS}>
@@ -117,8 +135,7 @@ export function HomePage() {
           })}
         </div>
       </motion.section>
-
-      {/* Footer */}
+      </AnimatedContent>
       <footer className="border-t border-border pb-2 pt-6">
         <div className="flex items-center justify-between text-xs text-text-muted">
           <span>© 2026 DevHub. All rights reserved.</span>

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { ROUTES } from '@/constants/routes';
+import GlitchText from '@/components/GlitchText';
 
 export function NotFoundPage() {
   return (
@@ -136,16 +137,19 @@ export function NotFoundPage() {
       </motion.div>
 
       {/* 404 text */}
-      <motion.h1
-        className="text-7xl font-black tracking-tight sm:text-8xl"
+      <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
-        <span className="bg-gradient-to-r from-accent to-purple-400 bg-clip-text text-transparent">
+        <GlitchText
+          speed={0.8}
+          enableShadows
+          className="!text-[clamp(3rem,12vw,8rem)] !bg-transparent"
+        >
           404
-        </span>
-      </motion.h1>
+        </GlitchText>
+      </motion.div>
 
       <motion.p
         className="mt-4 text-lg text-text-secondary"

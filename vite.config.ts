@@ -20,6 +20,7 @@ export default defineConfig({
           'vendor-markdown': ['react-markdown', 'remark-gfm'],
           'vendor-motion': ['framer-motion'],
           'vendor-state': ['zustand'],
+          'vendor-syntax': ['react-syntax-highlighter'],
         },
       },
     },

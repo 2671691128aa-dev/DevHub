@@ -5,6 +5,7 @@ import { MatchHighlight } from '@/features/regex/components/MatchHighlight';
 import { MatchList } from '@/features/regex/components/MatchList';
 import { RegexTemplates } from '@/features/regex/components/RegexTemplates';
 import { useRegexTester } from '@/features/regex/hooks/useRegexTester';
+import DecryptedText from '@/components/DecryptedText';
 
 export function RegexTesterPage() {
   const {
@@ -23,7 +24,21 @@ export function RegexTesterPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-6">
-      <ToolPageHeader icon={Regex} title="正则测试" />
+      <ToolPageHeader
+        icon={Regex}
+        title="正则测试"
+        titleNode={
+          <DecryptedText
+            text="正则测试"
+            animateOn="view"
+            speed={50}
+            maxIterations={10}
+            sequential
+            className="text-xl font-semibold text-text-primary"
+            encryptedClassName="text-accent"
+          />
+        }
+      />
 
       {/* Regex input */}
       <div className="mt-6">

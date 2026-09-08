@@ -67,7 +67,13 @@ export function WelcomeCard() {
 
         <div className="min-w-0 flex-1">
           <h2 className="truncate text-sm font-semibold text-text-primary">
-            {getGreeting()}，{nickname}
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              {`${getGreeting()}，${nickname}`}
+            </motion.span>
           </h2>
           <p className="mt-0.5 text-xs text-text-muted">{dateStr}</p>
         </div>

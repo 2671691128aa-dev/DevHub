@@ -1,12 +1,14 @@
 import { useRef, useCallback, useEffect } from 'react';
-import { sendMessage } from '../services/aiService';
+import { runAgentLoop } from '@/features/agent/agentLoop';
 import { useChatStore } from '@/store/useChatStore';
+import { syncMessageToServer } from '@/hooks/useChatSync';
 import { classifyAIError } from '@/lib/errorClassifier';
 import { retryWithBackoff } from '@/lib/retryWithBackoff';
 import { toast } from '@/lib/toast';
 import { RETRY_CONFIG } from '@/constants/error-messages';
 import type { Message, ChatSettings } from '@/types/chat';
 import type { AIError } from '@/types/error';
+import type { ToolCallStep } from '@/features/agent/agentLoop';
 
 export function useStreaming() {
   const abortRef = useRef<AbortController | null>(null);
@@ -19,6 +21,8 @@ export function useStreaming() {
   const updateMessageError = useChatStore((s) => s.updateMessageError);
   const setStreaming = useChatStore((s) => s.setStreaming);
   const createConversation = useChatStore((s) => s.createConversation);
+  const addToolCallToLastMessage = useChatStore((s) => s.addToolCallToLastMessage);
+  const updateToolCallInLastMessage = useChatStore((s) => s.updateToolCallInLastMessage);
 
   const send = useCallback(
     async (content: string) => {
@@ -44,6 +48,7 @@ export function useStreaming() {
         role: 'assistant',
         content: '',
         timestamp: Date.now(),
+        toolCalls: [],
       };
       addMessage(conversationId, assistantMessage);
       setStreaming(true);
@@ -63,16 +68,38 @@ export function useStreaming() {
               ...assistantMessage,
               id: crypto.randomUUID(),
               content: '',
+              toolCalls: [],
             });
 
-            return sendMessage(
-              history,
-              settings,
-              (chunk) => {
+            // Use Agent loop (which handles tool calling + streaming)
+            return runAgentLoop(history, settings, controller.signal, {
+              onToolCallStart: (step: ToolCallStep) => {
+                addToolCallToLastMessage(conversationId, {
+                  id: step.id,
+                  toolId: step.toolId,
+                  toolName: step.toolName,
+                  params: step.params,
+                  status: step.status,
+                  startTime: step.startTime,
+                });
+              },
+              onToolCallResult: (stepId: string, result: string, status: 'done' | 'error') => {
+                updateToolCallInLastMessage(conversationId, stepId, {
+                  result,
+                  status,
+                  endTime: Date.now(),
+                });
+              },
+              onTextChunk: (chunk: string) => {
                 updateLastAssistantMessage(conversationId, chunk);
               },
-              controller.signal,
-            );
+              onComplete: () => {
+                // Final completion handled below
+              },
+              onError: (code, message) => {
+                throw new Error(`${code}: ${message}`);
+              },
+            });
           },
           {
             maxRetries: RETRY_CONFIG.MAX_RETRIES,
@@ -88,6 +115,15 @@ export function useStreaming() {
 
         // 3. 成功：标记用户消息为 sent
         updateMessageStatus(conversationId, userMessage.id, 'sent');
+
+        // 4. 同步到 Supabase（登录用户，fire-and-forget）
+        const finalState = useChatStore.getState();
+        const syncedConv = finalState.conversations.find((c) => c.id === conversationId);
+        if (syncedConv) {
+          for (const msg of syncedConv.messages) {
+            syncMessageToServer(conversationId, msg);
+          }
+        }
       } catch (e) {
         const aiError = classifyAIError(e);
 
@@ -116,6 +152,8 @@ export function useStreaming() {
       updateMessageError,
       setStreaming,
       createConversation,
+      addToolCallToLastMessage,
+      updateToolCallInLastMessage,
     ],
   );
 

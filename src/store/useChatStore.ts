@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { indexedDBStorage } from '@/lib/storage';
-import type { Conversation, ChatSettings, Message } from '@/types/chat';
+import type { Conversation, ChatSettings, Message, ToolCallDisplay } from '@/types/chat';
 import type { AIErrorCode } from '@/types/error';
 import {
   STORAGE_KEYS,
@@ -50,6 +50,14 @@ interface ChatStore {
     attempt?: number,
   ) => void;
   getActiveConversation: () => Conversation | null;
+  /** Add a tool call step to the last assistant message */
+  addToolCallToLastMessage: (conversationId: string, toolCall: ToolCallDisplay) => void;
+  /** Update a tool call step in the last assistant message */
+  updateToolCallInLastMessage: (
+    conversationId: string,
+    toolCallId: string,
+    updates: Partial<ToolCallDisplay>,
+  ) => void;
 }
 
 export const useChatStore = create<ChatStore>()(
@@ -166,6 +174,40 @@ export const useChatStore = create<ChatStore>()(
       getActiveConversation: () => {
         const state = get();
         return state.conversations.find((c) => c.id === state.activeConversationId) ?? null;
+      },
+
+      addToolCallToLastMessage: (conversationId, toolCall) => {
+        set((state) => ({
+          conversations: updateConversation(state.conversations, conversationId, (c) => {
+            const messages = [...c.messages];
+            const last = messages[messages.length - 1];
+            if (last?.role === 'assistant') {
+              messages[messages.length - 1] = {
+                ...last,
+                toolCalls: [...(last.toolCalls ?? []), toolCall],
+              };
+            }
+            return { ...c, messages, updatedAt: Date.now() };
+          }),
+        }));
+      },
+
+      updateToolCallInLastMessage: (conversationId, toolCallId, updates) => {
+        set((state) => ({
+          conversations: updateConversation(state.conversations, conversationId, (c) => {
+            const messages = [...c.messages];
+            const last = messages[messages.length - 1];
+            if (last?.role === 'assistant' && last.toolCalls) {
+              messages[messages.length - 1] = {
+                ...last,
+                toolCalls: last.toolCalls.map((tc) =>
+                  tc.id === toolCallId ? { ...tc, ...updates } : tc,
+                ),
+              };
+            }
+            return { ...c, messages, updatedAt: Date.now() };
+          }),
+        }));
       },
     }),
     {

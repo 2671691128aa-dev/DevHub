@@ -44,33 +44,34 @@ export function ToolboxPage() {
   }, [searchQuery, activeCategory, favoriteIds]);
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-8">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-text-primary">
-            {activeCategory === 'favorites' ? (
-              <span className="flex items-center gap-2">
-                <Star className="h-5 w-5 text-yellow-400" />
-                我的收藏
-              </span>
-            ) : (
-              '工具中心'
-            )}
-          </h1>
-          <p className="mt-1 text-sm text-text-muted">
-            {activeCategory === 'favorites'
-              ? `共 ${filteredTools.length} 个收藏工具`
-              : `共 ${tools.length} 个工具`}
-          </p>
-        </div>
-        <div className="w-full sm:w-64">
-          <SearchInput value={searchQuery} onChange={setSearchQuery} />
+    <div className="mx-auto max-w-7xl px-6 py-4">
+      <div className="mb-4 rounded-xl bg-bg-primary/50 p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-xl font-semibold text-text-primary">
+              {activeCategory === 'favorites' ? (
+                <span className="flex items-center gap-2">
+                  <Star className="h-5 w-5 text-yellow-400" />
+                  我的收藏
+                </span>
+              ) : (
+                '工具中心'
+              )}
+            </h1>
+            <p className="mt-1 text-xs text-text-muted">
+              {activeCategory === 'favorites'
+                ? `共 ${filteredTools.length} 个收藏工具`
+                : `共 ${tools.length} 个工具`}
+            </p>
+          </div>
+          <div className="w-full sm:w-64">
+            <SearchInput value={searchQuery} onChange={setSearchQuery} />
+          </div>
         </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="mt-6">
+      <div className="mt-3">
         <Tabs
           tabs={filterTabs}
           activeId={activeCategory}
@@ -79,9 +80,9 @@ export function ToolboxPage() {
       </div>
 
       {/* Tools Grid */}
-      <div className="mt-8">
+      <div className="mt-4">
         {filteredTools.length > 0 ? (
-          <motion.div layout className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <motion.div layout className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             <AnimatePresence>
               {filteredTools.map((tool) => {
                 const Icon = iconMap[tool.icon] ?? Wrench;
@@ -101,18 +102,18 @@ export function ToolboxPage() {
             </AnimatePresence>
           </motion.div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="text-text-tertiary flex h-14 w-14 items-center justify-center rounded-2xl bg-bg-tertiary">
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="text-text-tertiary flex h-12 w-12 items-center justify-center rounded-2xl bg-bg-tertiary">
               {activeCategory === 'favorites' ? (
-                <Star className="h-7 w-7" />
+                <Star className="h-6 w-6" />
               ) : (
-                <Search className="h-7 w-7" />
+                <Search className="h-6 w-6" />
               )}
             </div>
-            <h3 className="mt-4 text-lg font-medium text-text-primary">
+            <h3 className="mt-3 text-base font-medium text-text-primary">
               {activeCategory === 'favorites' ? '暂无收藏工具' : '没有找到匹配的工具'}
             </h3>
-            <p className="text-text-tertiary mt-1 text-sm">
+            <p className="text-text-tertiary mt-1 text-xs">
               {activeCategory === 'favorites' ? '浏览工具时点击星标即可收藏' : '试试其他关键词'}
             </p>
           </div>
