@@ -8,5 +8,6 @@ dist
 vite.config.d.ts
 .tmp
 output
+.claude
 
 .vercel
