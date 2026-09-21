@@ -34,13 +34,9 @@ export function useChat() {
   const handleSend = useCallback(
     (content: string) => {
       if (!content.trim()) return;
-      if (!useChatStore.getState().settings.apiKey) {
-        setSettingsOpen(true);
-        return;
-      }
       send(content);
     },
-    [send, setSettingsOpen],
+    [send],
   );
 
   return {

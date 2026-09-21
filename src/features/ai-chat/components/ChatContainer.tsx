@@ -11,11 +11,10 @@ export interface ChatContainerProps {
 }
 
 export function ChatContainer({ pendingPromptText, onPromptHandled }: ChatContainerProps) {
-  const { conversation, isStreaming, handleSend, stop, messagesEndRef, settings, setSettingsOpen } =
+  const { conversation, isStreaming, handleSend, stop, messagesEndRef, setSettingsOpen } =
     useChat();
 
   const parentRef = useRef<HTMLDivElement>(null);
-  const needsApiKey = !settings.apiKey;
   const messages = conversation?.messages ?? [];
 
   // Virtual list for messages
@@ -47,9 +46,7 @@ export function ChatContainer({ pendingPromptText, onPromptHandled }: ChatContai
             </div>
             <h3 className="mt-4 text-lg font-medium text-text-primary">开始对话</h3>
             <p className="text-text-tertiary mt-1 max-w-sm text-sm">
-              {needsApiKey
-                ? '请先点击右上角设置 API Key 以开始对话'
-                : '输入消息开始与 AI 对话，或选择一个提示模板'}
+              输入消息开始与 AI 对话，或选择一个提示模板
             </p>
           </div>
         ) : (
@@ -96,7 +93,6 @@ export function ChatContainer({ pendingPromptText, onPromptHandled }: ChatContai
           onSend={handleSend}
           onStop={stop}
           isStreaming={isStreaming}
-          disabled={needsApiKey}
           pendingPromptText={pendingPromptText}
           onPromptHandled={onPromptHandled}
         />

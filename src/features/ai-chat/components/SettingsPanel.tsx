@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
@@ -11,6 +12,7 @@ export function SettingsPanel() {
   const updateSettings = useChatStore((s) => s.updateSettings);
   const isSettingsOpen = useAppStore((s) => s.isSettingsOpen);
   const setSettingsOpen = useAppStore((s) => s.setSettingsOpen);
+  const [isCustomModel, setIsCustomModel] = useState(false);
 
   const currentProvider =
     AI_PROVIDERS.find((p) => p.name === settings.providerName) ?? AI_PROVIDERS[0];
@@ -23,8 +25,8 @@ export function SettingsPanel() {
       provider: provider.id,
       baseUrl: provider.defaultBase,
       model: provider.models[0]?.value ?? '',
-      apiKey: '',
     });
+    setIsCustomModel(false);
   };
 
   return (
@@ -67,26 +69,20 @@ export function SettingsPanel() {
           </div>
         )}
 
-        {/* API Key */}
-        <div>
-          <label className="mb-1.5 block text-sm font-medium text-text-secondary">
-            API Key（可选）
-          </label>
-          <Input
-            type="password"
-            value={settings.apiKey}
-            onChange={(e) => updateSettings({ apiKey: e.target.value })}
-            placeholder={currentProvider.keyPlaceholder}
-          />
-          <p className="mt-1 text-xs text-text-muted">
-            已登录用户的 API Key 由服务端管理，无需在此填写。未登录时可在此输入本地使用。
-          </p>
-        </div>
-
         {/* Model */}
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-text-secondary">模型</label>
-          {models.length > 0 ? (
+          <div className="mb-1.5 flex items-center justify-between">
+            <label className="block text-sm font-medium text-text-secondary">模型</label>
+            {models.length > 0 && (
+              <button
+                onClick={() => setIsCustomModel((v) => !v)}
+                className="text-xs text-accent transition-colors hover:text-accent-hover"
+              >
+                {isCustomModel ? '从列表选择' : '手动输入'}
+              </button>
+            )}
+          </div>
+          {models.length > 0 && !isCustomModel ? (
             <select
               value={settings.model}
               onChange={(e) => updateSettings({ model: e.target.value })}

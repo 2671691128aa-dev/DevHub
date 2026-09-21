@@ -5,13 +5,13 @@ export const AI_ERROR_MESSAGES: Record<AIErrorCode, ErrorMessage> = {
   AUTH_FAILED: {
     code: 'AUTH_FAILED',
     title: '认证失败',
-    description: 'API Key 无效或已过期，请在设置中检查',
+    description: '登录已过期，请重新登录后再试',
     retryable: false,
   },
   FORBIDDEN: {
     code: 'FORBIDDEN',
     title: '权限不足',
-    description: '当前 API Key 无权访问该模型',
+    description: '当前账户无权访问该模型，请在设置中更换模型',
     retryable: false,
   },
   RATE_LIMITED: {

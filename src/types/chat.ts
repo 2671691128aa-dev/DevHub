@@ -39,7 +39,6 @@ export type AIProvider = 'anthropic' | 'openai-compatible';
 export interface ChatSettings {
   provider: AIProvider;
   providerName: string;
-  apiKey: string;
   baseUrl: string;
   model: string;
   temperature: number;

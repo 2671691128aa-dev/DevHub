@@ -17,6 +17,7 @@ import {
   getOpenAIToolDefinitions,
   getTool,
 } from './toolRegistry';
+import { withTimeout } from '@/features/ai-chat/services/requestTimeout';
 
 export interface ToolCallStep {
   id: string;
@@ -48,28 +49,34 @@ async function nonStreamingChat(
   const token = (window as unknown as { __clerkToken?: string }).__clerkToken;
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
-  const response = await fetch('/api/chat', {
-    method: 'POST',
-    headers,
-    signal,
-    body: JSON.stringify({
-      messages,
-      provider: settings.provider,
-      providerName: settings.providerName,
-      model: settings.model,
-      temperature: settings.temperature,
-      maxTokens: settings.maxTokens,
-      systemPrompt: settings.systemPrompt || undefined,
-      tools,
-      stream: false,
-    }),
-  });
+  const { signal: timedSignal, cleanup } = withTimeout(signal);
 
-  if (!response.ok) {
-    throw new Error(`API error: ${response.status}`);
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers,
+      signal: timedSignal,
+      body: JSON.stringify({
+        messages,
+        provider: settings.provider,
+        providerName: settings.providerName,
+        model: settings.model,
+        temperature: settings.temperature,
+        maxTokens: settings.maxTokens,
+        systemPrompt: settings.systemPrompt || undefined,
+        tools,
+        stream: false,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    return response.json() as Promise<Record<string, unknown>>;
+  } finally {
+    cleanup();
   }
-
-  return response.json() as Promise<Record<string, unknown>>;
 }
 
 /** Send a streaming request to /api/chat — exported for direct use if needed */
@@ -83,64 +90,70 @@ export async function streamingChat(
   const token = (window as unknown as { __clerkToken?: string }).__clerkToken;
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
-  const response = await fetch('/api/chat', {
-    method: 'POST',
-    headers,
-    signal,
-    body: JSON.stringify({
-      messages,
-      provider: settings.provider,
-      providerName: settings.providerName,
-      model: settings.model,
-      temperature: settings.temperature,
-      maxTokens: settings.maxTokens,
-      systemPrompt: settings.systemPrompt || undefined,
-      stream: true,
-    }),
-  });
+  const { signal: timedSignal, cleanup } = withTimeout(signal);
 
-  if (!response.ok) {
-    throw new Error(`API error: ${response.status}`);
-  }
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers,
+      signal: timedSignal,
+      body: JSON.stringify({
+        messages,
+        provider: settings.provider,
+        providerName: settings.providerName,
+        model: settings.model,
+        temperature: settings.temperature,
+        maxTokens: settings.maxTokens,
+        systemPrompt: settings.systemPrompt || undefined,
+        stream: true,
+      }),
+    });
 
-  const reader = response.body?.getReader();
-  if (!reader) throw new Error('No response body');
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
 
-  const decoder = new TextDecoder();
-  let buffer = '';
+    const reader = response.body?.getReader();
+    if (!reader) throw new Error('No response body');
 
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
+    const decoder = new TextDecoder();
+    let buffer = '';
 
-    buffer += decoder.decode(value, { stream: true });
-    const lines = buffer.split('\n');
-    buffer = lines.pop() ?? '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
 
-    for (const line of lines) {
-      if (!line.startsWith('data: ')) continue;
-      const data = line.slice(6);
-      if (data === '[DONE]') return;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() ?? '';
 
-      try {
-        const parsed = JSON.parse(data) as Record<string, unknown>;
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6);
+        if (data === '[DONE]') return;
 
-        // Anthropic
-        if (parsed.type === 'content_block_delta' && parsed.delta) {
-          const text = (parsed.delta as Record<string, string>).text;
-          if (text) onChunk(text);
+        try {
+          const parsed = JSON.parse(data) as Record<string, unknown>;
+
+          // Anthropic
+          if (parsed.type === 'content_block_delta' && parsed.delta) {
+            const text = (parsed.delta as Record<string, string>).text;
+            if (text) onChunk(text);
+          }
+
+          // OpenAI
+          const choices = parsed.choices as
+            | Array<{ delta?: { content?: string } }>
+            | undefined;
+          const content = choices?.[0]?.delta?.content;
+          if (typeof content === 'string') onChunk(content);
+        } catch {
+          // skip
         }
-
-        // OpenAI
-        const choices = parsed.choices as
-          | Array<{ delta?: { content?: string } }>
-          | undefined;
-        const content = choices?.[0]?.delta?.content;
-        if (typeof content === 'string') onChunk(content);
-      } catch {
-        // skip
       }
     }
+  } finally {
+    cleanup();
   }
 }
 

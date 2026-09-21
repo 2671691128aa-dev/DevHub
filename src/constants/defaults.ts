@@ -9,7 +9,6 @@ import type { MarkdownViewMode } from '@/types/chat';
 export const DEFAULT_CHAT_SETTINGS: ChatSettings = {
   provider: 'anthropic',
   providerName: 'Anthropic',
-  apiKey: '',
   baseUrl: '',
   model: 'claude-sonnet-4-20250514',
   temperature: 0.7,

@@ -4,8 +4,6 @@ export { PROMPT_TEMPLATES } from './prompt-templates';
 export { ROUTES, type RoutePath } from './routes';
 export { STORAGE_KEYS } from './storage-keys';
 export {
-  ANTHROPIC_API_URL,
-  ANTHROPIC_API_VERSION,
   OPENAI_CHAT_PATH,
   DEFAULT_OPENAI_BASE_URL,
   EXTERNAL_LINKS,

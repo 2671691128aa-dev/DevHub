@@ -1,12 +1,9 @@
 /**
  * API configuration — endpoints, version headers, and default URLs.
+ *
+ * Provider endpoint URLs and version headers live server-side in `api/chat.ts`;
+ * frontend only talks to the `/api/chat` proxy.
  */
-
-/** Anthropic Messages API endpoint */
-export const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
-
-/** Anthropic API version header value */
-export const ANTHROPIC_API_VERSION = '2023-06-01';
 
 /** OpenAI-compatible chat completions path (appended to base URL) */
 export const OPENAI_CHAT_PATH = '/v1/chat/completions';
